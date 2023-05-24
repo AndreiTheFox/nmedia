@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             viewsCount.text = post.views.toString()
 
             //Нажатие кнопки лайк
-            likesButton.setOnClickListener {
+           likesButton.setOnClickListener {
                 post.likedByMe = !post.likedByMe
                 likesCount.text = updateLikesAndCounter()
             }
