@@ -73,19 +73,18 @@
         android:contentDescription="@string/likes_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/content"
-        app:srcCompat="@drawable/likes"
+        app:srcCompat="@drawable/like_button"
         tools:ignore="RedundantDescriptionCheck" />
 
     <TextView
         android:id="@+id/likesCount"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
         android:maxLines="1"
         app:layout_constraintStart_toEndOf="@id/likesButton"
         app:layout_constraintTop_toBottomOf="@id/content"
         app:layout_constraintBottom_toBottomOf="@id/likesButton"
-        tools:text="@sample/posts.json/data/likes" />
+        tools:text="1K" />
 
     <ImageView
         android:id="@+id/sharePostButton"
