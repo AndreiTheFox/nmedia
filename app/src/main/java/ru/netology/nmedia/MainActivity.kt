@@ -35,9 +35,9 @@ class MainActivity : AppCompatActivity() {
             if (post.likedByMe) {
                 likesButton.setImageResource(R.drawable.liked_red)
             }
-            likesCount.text = post.likes.toString()
-            sharedCount.text = post.shared.toString()
-            viewsCount.text = post.views.toString()
+            likesCount.text = counterWrite(post.likes)
+            sharedCount.text = counterWrite(post.shared)
+            viewsCount.text = counterWrite(post.views)
 
             //Нажатие кнопки лайк
            likesButton.setOnClickListener {
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateSharedPostState(): String {
         post.sharedByMe = true
         post.shared++
-        binding.sharePostButton.setImageResource(android.R.drawable.ic_menu_send)
+        binding.sharePostButton.setImageResource(R.drawable.icon_send_48)
         return counterWrite(post.shared)
 
     }
