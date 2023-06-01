@@ -83,12 +83,11 @@
 
     <TextView
         android:id="@+id/likesCount"
-        android:layout_width="0dp"
+        android:layout_width="48dp"
         android:layout_height="wrap_content"
-        android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="@id/likesButton"
         app:layout_constraintStart_toEndOf="@id/likesButton"
-        app:layout_constraintTop_toBottomOf="@id/content"
+        app:layout_constraintTop_toTopOf="@id/likesButton"
         tools:text="1K" />
 
     <ImageView
@@ -97,7 +96,6 @@
         android:layout_height="@dimen/post_avatar_size"
         android:layout_marginStart="@dimen/common_spacing"
         android:contentDescription="@string/share_post_button"
-        app:layout_constraintBottom_toBottomOf="@id/likesButton"
         app:layout_constraintStart_toEndOf="@id/likesCount"
         app:layout_constraintTop_toBottomOf="@id/content"
         app:srcCompat="@drawable/icon_share_48"
@@ -105,12 +103,11 @@
 
     <TextView
         android:id="@+id/sharedCount"
-        android:layout_width="0dp"
+        android:layout_width="48dp"
         android:layout_height="wrap_content"
-        android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="@id/sharePostButton"
         app:layout_constraintStart_toEndOf="@id/sharePostButton"
-        app:layout_constraintTop_toBottomOf="@id/content"
+        app:layout_constraintTop_toTopOf="@id/sharePostButton"
         tools:text="@sample/posts.json/data/shared" />
 
     <ImageView
@@ -119,7 +116,6 @@
         android:layout_height="@dimen/post_avatar_size"
         android:layout_marginEnd="@dimen/common_spacing"
         android:contentDescription="@string/views_button"
-        app:layout_constraintBottom_toBottomOf="@id/likesButton"
         app:layout_constraintEnd_toStartOf="@id/viewsCount"
         app:layout_constraintTop_toBottomOf="@id/content"
         app:srcCompat="@drawable/icon_views_48"
@@ -127,11 +123,10 @@
 
     <TextView
         android:id="@+id/viewsCount"
-        android:layout_width="0dp"
+        android:layout_width="48dp"
         android:layout_height="wrap_content"
-        android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="@id/viewsButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/content"
+        app:layout_constraintTop_toTopOf="@id/viewsButton"
         tools:text="@sample/posts.json/data/views" />
 </androidx.constraintlayout.widget.ConstraintLayout>
