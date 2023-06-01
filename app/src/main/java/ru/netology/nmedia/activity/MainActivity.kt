@@ -3,7 +3,7 @@ package ru.netology.nmedia.activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
-import ru.netology.nmedia.R
+import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.viewmodel.PostViewModel
 
@@ -16,32 +16,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val viewModel: PostViewModel by viewModels()
 
-        val viewModel by viewModels<PostViewModel>()
-        viewModel.data.observe(this) { post ->
-            //Обновление view при обновлении данных в посте
-            with(binding) {
-                author.text = post.author
-                published.text = post.published
-                content.text = post.content
-                likesButton.setImageResource(if (post.likedByMe) R.drawable.liked_red else R.drawable.like_button)
-                sharePostButton.setImageResource(if (post.sharedByMe) R.drawable.icon_send_48 else R.drawable.icon_share_48)
-                likesCount.text = counterWrite(post.likes)
-                sharedCount.text = counterWrite(post.shared)
-                viewsCount.text = counterWrite(post.views)
-            }
+        val adapter = PostsAdapter({
+            viewModel.likeById(it.id)
+        },
+            {
+                viewModel.sharePost(it.id)
+            })
+        binding.list.adapter = adapter
+        viewModel.data.observe(this) { posts ->
+            adapter.submitList(posts)
         }
+    }
 
-        //Обработчик кнопки поделиться
-        binding.sharePostButton.setOnClickListener {
-            viewModel.share()
-        }
-        //Обработчик кнопки лайк
-        binding.likesButton.setOnClickListener {
-            viewModel.like()
-        }
-
-    } //Конец onCreate
 }//Конец Main
 
 //Функция преобразования входящего целого числа в строку с сокращением записи до вида 1.1К (тысячи) или 1.1М (миллионы)
