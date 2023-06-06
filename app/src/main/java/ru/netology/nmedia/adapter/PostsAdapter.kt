@@ -2,6 +2,7 @@ package ru.netology.nmedia.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -10,15 +11,19 @@ import ru.netology.nmedia.activity.counterWrite
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 
-typealias OnLikeListener = (post: Post) -> Unit
-typealias OnShareListener = (post: Post) -> Unit
+interface OnInteractionListener {
+    fun onLike(post: Post) {}
+    fun onShare(post: Post) {}
+    fun onRemove(post: Post) {}
+    fun onEdit(post: Post) {}
+}
 
-class PostsAdapter(private val onLikeListener: OnLikeListener, private val onShareListener: OnShareListener) :
+class PostsAdapter(private val onInteractionListener: OnInteractionListener) :
     ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return PostViewHolder(binding, onLikeListener, onShareListener)
+        return PostViewHolder(binding, onInteractionListener)
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
@@ -29,8 +34,7 @@ class PostsAdapter(private val onLikeListener: OnLikeListener, private val onSha
 
 class PostViewHolder(
     private val binding: CardPostBinding,
-    private val onLikeListener: OnLikeListener,
-    private val onShareListener: OnShareListener,
+    private val onInteractionListener: OnInteractionListener,
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(post: Post) {
         binding.apply {
@@ -41,22 +45,42 @@ class PostViewHolder(
             sharedCount.text = counterWrite(post.shared)
             viewsCount.text = counterWrite(post.views)
             likesButton.setImageResource(
-                if (post.likedByMe) R.drawable.liked_new else R.drawable.likes_new
+                if (post.likedByMe) R.drawable.liked_red else R.drawable.like_button
             )
             sharePostButton.setImageResource(
                 if (post.sharedByMe) R.drawable.icon_send_48 else R.drawable.icon_share_48
             )
+            menu.setOnClickListener {
+                PopupMenu(it.context, it).apply {
+                    inflate(R.menu.options_post)
+                    setOnMenuItemClickListener { item ->
+                        when (item.itemId) {
+                            R.id.remove -> {
+                                onInteractionListener.onRemove(post)
+                                true
+                            }
+
+                            R.id.edit -> {
+                                onInteractionListener.onEdit(post)
+                                true
+                            }
+
+                            else -> false
+                        }
+                    }
+                }.show()
+            }
 
             likesButton.setOnClickListener {
-                onLikeListener(post)
+                onInteractionListener.onLike(post)
             }
-            sharePostButton.setOnClickListener{
-                onShareListener(post)
+
+            sharePostButton.setOnClickListener {
+                onInteractionListener.onShare(post)
             }
         }
     }
 }
-
 
 class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
     override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {

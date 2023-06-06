@@ -23,7 +23,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         app:layout_constraintBottom_toTopOf="@id/published"
-        app:layout_constraintEnd_toStartOf="@id/more_vert"
+        app:layout_constraintEnd_toStartOf="@id/menu"
         app:layout_constraintStart_toEndOf="@id/avatar"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="spread_inside"
@@ -36,20 +36,20 @@
         android:layout_marginStart="@dimen/common_spacing"
         android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="@id/avatar"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/menu"
         app:layout_constraintStart_toEndOf="@id/avatar"
         app:layout_constraintTop_toBottomOf="@id/author"
         tools:text="@sample/posts.json/data/published" />
 
-    <ImageView
-        android:id="@+id/more_vert"
-        android:layout_width="19dp"
-        android:layout_height="19dp"
+    <ImageButton
+        android:id="@+id/menu"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:background="@android:color/transparent"
-        android:contentDescription="@string/more_info"
+        android:contentDescription="@string/Post_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/baseline_more_vert_24"
+        app:srcCompat="@drawable/ic_more_vert_24"
         tools:ignore="ImageContrastCheck" />
 
     <androidx.constraintlayout.widget.Barrier
@@ -78,7 +78,7 @@
         android:contentDescription="@string/likes_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/content"
-        app:srcCompat="@drawable/likes_new"
+        app:srcCompat="@drawable/like_button"
         tools:ignore="RedundantDescriptionCheck" />
 
     <TextView
@@ -129,4 +129,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/viewsButton"
         tools:text="@sample/posts.json/data/views" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

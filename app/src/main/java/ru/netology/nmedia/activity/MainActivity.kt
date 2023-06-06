@@ -1,32 +1,106 @@
 package ru.netology.nmedia.activity
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.activity.viewModels
+import ru.netology.nmedia.R
+import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.ActivityMainBinding
+import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
+    private var savedPostText: String = ""
     private val binding: ActivityMainBinding
         get() = _binding!!
+    val viewModel: PostViewModel by viewModels()
+
+    private val interactionListener: OnInteractionListener = object : OnInteractionListener {
+        override fun onEdit(post: Post) {
+            viewModel.edit(post)
+        }
+
+        override fun onLike(post: Post) {
+            viewModel.likeById(post.id)
+        }
+
+        override fun onRemove(post: Post) {
+            viewModel.removeById(post.id)
+        }
+
+        override fun onShare(post: Post) {
+            viewModel.sharePost(post.id)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val viewModel: PostViewModel by viewModels()
-
-        val adapter = PostsAdapter({
-            viewModel.likeById(it.id)
-        },
-            {
-                viewModel.sharePost(it.id)
-            })
+        val adapter = PostsAdapter(interactionListener)
         binding.list.adapter = adapter
+        val editText = binding.content
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                binding.groupSaveRollback.visibility = View.INVISIBLE
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (!editText.text.isNullOrBlank()) {
+                    binding.groupSaveRollback.visibility = View.VISIBLE
+                } else binding.groupSaveRollback.visibility = View.INVISIBLE
+            }
+        })
+
         viewModel.data.observe(this) { posts ->
             adapter.submitList(posts)
+        }
+
+        viewModel.edited.observe(this) { post ->
+            if (post.id != 0L) {
+                with(binding.content) {
+                    requestFocus()
+                    setText(post.content)
+                    savedPostText = post.content.trim()
+                }
+            }
+        }
+
+        binding.save.setOnClickListener {
+            with(binding.content) {
+                if (text.isNullOrBlank()) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        context.getString(R.string.error_empty_content), Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    viewModel.changeContent(text.toString())
+                    viewModel.save()
+                    setText("")
+                    clearFocus()
+                    AndroidUtils.hideKeyboard(this)
+                }
+            }
+        }
+
+        binding.rollbackPostChanges.setOnClickListener {
+            viewModel.edited.observe(this) { post ->
+                if (post.id == 0L) {
+                    binding.content.text =
+                        null  //Если поста еще не существует, просто очищаем ввод в null
+                } else binding.content.setText(savedPostText) //Иначе - возвращаем текст исходного поста
+            }
         }
     }
 
@@ -51,4 +125,11 @@ fun counterWrite(incNumber: Int): String {
         else -> incNumber.toString()
     }
     return counterWrite
+}
+
+object AndroidUtils {
+    fun hideKeyboard(view: View) {
+        val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
 }
