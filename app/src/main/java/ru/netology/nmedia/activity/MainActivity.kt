@@ -52,10 +52,8 @@ class MainActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 binding.groupSaveRollback.visibility = View.INVISIBLE
             }
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             }
-
             override fun afterTextChanged(s: Editable?) {
                 if (!editText.text.isNullOrBlank()) {
                     binding.groupSaveRollback.visibility = View.VISIBLE
@@ -72,6 +70,7 @@ class MainActivity : AppCompatActivity() {
                 with(binding.content) {
                     requestFocus()
                     setText(post.content)
+                    setSelection(post.content.length)
                     savedPostText = post.content.trim()
                 }
             }

@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/common_spacing"
->
+    android:padding="@dimen/common_spacing">
+
     <ImageView
         android:id="@+id/avatar"
         android:layout_width="@dimen/post_avatar_size"
@@ -41,16 +41,18 @@
         app:layout_constraintTop_toBottomOf="@id/author"
         tools:text="@sample/posts.json/data/published" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/menu"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@android:color/transparent"
+        style="@style/Widget.AppTheme.AnyButton"
+        android:layout_width="24dp"
+        android:layout_height="wrap_content"
         android:contentDescription="@string/Post_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_more_vert_24"
-        tools:ignore="ImageContrastCheck" />
+        app:icon="@drawable/ic_more_vert_24"
+        android:paddingTop="0dp"
+        tools:ignore="ImageContrastCheck"
+        />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/top_post_barrier"
@@ -71,63 +73,47 @@
         tools:ignore="VisualLintLongText"
         tools:text="@sample/posts.json/data/content" />
 
-    <ImageView
-        android:id="@+id/likesButton"
-        android:layout_width="@dimen/post_avatar_size"
-        android:layout_height="@dimen/post_avatar_size"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/like"
+        style="@style/Widget.AppTheme.LikeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checkable="true"
         android:contentDescription="@string/likes_button"
+        app:icon="@drawable/ic_like_selector_24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/content"
-        app:srcCompat="@drawable/like_button"
-        tools:ignore="RedundantDescriptionCheck" />
+        tools:checked="true"
+        tools:ignore="RedundantDescriptionCheck"
+        tools:text="234" />
 
-    <TextView
-        android:id="@+id/likesCount"
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/likesButton"
-        app:layout_constraintStart_toEndOf="@id/likesButton"
-        app:layout_constraintTop_toTopOf="@id/likesButton"
-        tools:text="1K" />
-
-    <ImageView
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/sharePostButton"
-        android:layout_width="@dimen/post_avatar_size"
-        android:layout_height="@dimen/post_avatar_size"
-        android:layout_marginStart="@dimen/common_spacing"
-        android:contentDescription="@string/share_post_button"
-        app:layout_constraintStart_toEndOf="@id/likesCount"
-        app:layout_constraintTop_toBottomOf="@id/content"
-        app:srcCompat="@drawable/icon_share_48"
-        tools:ignore="RedundantDescriptionCheck,ImageContrastCheck" />
-
-    <TextView
-        android:id="@+id/sharedCount"
-        android:layout_width="48dp"
+        style="@style/Widget.AppTheme.AnyButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/sharePostButton"
-        app:layout_constraintStart_toEndOf="@id/sharePostButton"
-        app:layout_constraintTop_toTopOf="@id/sharePostButton"
-        tools:text="@sample/posts.json/data/shared" />
+        android:layout_marginStart="@dimen/common_spacing"
+        android:checkable="true"
+        android:contentDescription="@string/share_post_button"
+        app:icon="@drawable/ic_share_selector_24dp"
+        app:layout_constraintStart_toEndOf="@id/like"
+        app:layout_constraintTop_toBottomOf="@id/content"
+        tools:ignore="RedundantDescriptionCheck"
+        tools:text="1111" />
 
-    <ImageView
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/viewsButton"
-        android:layout_width="@dimen/post_avatar_size"
-        android:layout_height="@dimen/post_avatar_size"
+        style="@style/Widget.AppTheme.LikeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/common_spacing"
         android:contentDescription="@string/views_button"
-        app:layout_constraintEnd_toStartOf="@id/viewsCount"
-        app:layout_constraintTop_toBottomOf="@id/content"
-        app:srcCompat="@drawable/icon_views_48"
-        tools:ignore="RedundantDescriptionCheck,ImageContrastCheck" />
-
-    <TextView
-        android:id="@+id/viewsCount"
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/viewsButton"
+        app:icon="@drawable/icon_views_24"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/viewsButton"
-        tools:text="@sample/posts.json/data/views" />
+        app:layout_constraintTop_toBottomOf="@id/content"
+        tools:ignore="RedundantDescriptionCheck"
+        tools:text="1111"
+        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
