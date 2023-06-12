@@ -46,6 +46,7 @@ class PostViewHolder(
             viewsButton.text = counterWrite(post.views)
             like.isChecked = post.likedByMe
             sharePostButton.isChecked = post.sharedByMe
+            sharePostButton.isCheckable = !post.sharedByMe
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
