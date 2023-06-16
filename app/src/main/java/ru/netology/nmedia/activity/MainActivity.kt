@@ -4,11 +4,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.activity.result.launch
 import androidx.activity.viewModels
 import ru.netology.nmedia.R
@@ -20,14 +17,13 @@ import ru.netology.nmedia.viewmodel.PostViewModel
 
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
-    private var savedPostText: String = ""
+//    private var savedPostText: String = ""
     private val binding: ActivityMainBinding
         get() = _binding!!
     val viewModel: PostViewModel by viewModels()
-
     private val interactionListener: OnInteractionListener = object : OnInteractionListener {
         override fun onEdit(post: Post) {
-            viewModel.edit(post)
+            viewModel.edit(post) //сохранение поста в edited = MutableLiveData
         }
 
         override fun onLike(post: Post) {
@@ -51,81 +47,39 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val adapter = PostsAdapter(interactionListener)
         binding.list.adapter = adapter
-        val editText = binding.content
-        editText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                binding.groupSaveRollback.visibility = View.INVISIBLE
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                if (!editText.text.isNullOrBlank()) {
-                    binding.groupSaveRollback.visibility = View.VISIBLE
-                } else binding.groupSaveRollback.visibility = View.INVISIBLE
-            }
-        })
-
         viewModel.data.observe(this) { posts ->
             adapter.submitList(posts)
         }
 
-        viewModel.edited.observe(this) { post ->
-            if (post.id != 0L) {
-                with(binding.content) {
-                    requestFocus()
-                    setText(post.content)
-                    setSelection(post.content.length)
-                    savedPostText = post.content.trim()
-                }
-            }
-        }
-
-        binding.save.setOnClickListener {
-            with(binding.content) {
-                if (text.isNullOrBlank()) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        context.getString(R.string.error_empty_content), Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    viewModel.changeContent(text.toString())
-                    viewModel.save()
-                    setText("")
-                    clearFocus()
-                    AndroidUtils.hideKeyboard(this)
-                }
-            }
-        }
-
-        binding.rollbackPostChanges.setOnClickListener {
-            viewModel.edited.observe(this) { post ->
-                if (post.id == 0L) {
-                    binding.content.text =
-                        null  //Если поста еще не существует, просто очищаем ввод в null
-                } else binding.content.setText(savedPostText) //Иначе - возвращаем текст исходного поста
-            }
-        }
         val newPostLauncher = registerForActivityResult(NewPostResultContract()) { result ->
             result ?: return@registerForActivityResult
             viewModel.changeContent(result)
             viewModel.save()
         }
-        binding.fab.setOnClickListener{
+
+        val newEditPostLauncher = registerForActivityResult(EditPostResultContract()) { result ->
+            result ?: return@registerForActivityResult
+            viewModel.changeContent(result)
+            viewModel.save()
+        }
+
+        binding.fab.setOnClickListener {
             newPostLauncher.launch()
         }
+
+        viewModel.edited.observe(this) { post ->
+            if (post.id != 0L) {
+                newEditPostLauncher.launch(post)
+            }
+        }
+
     }
-
-
-
 
 }//Конец Main
 
