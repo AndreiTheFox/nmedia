@@ -17,4 +17,6 @@
     <string name="chooser_share_post">Поделиться постом</string>
     <string name="save">Сохранить</string>
     <string name="add_post">Новый пост</string>
+    <string name="video">Видео</string>
+    <string name="video_url">Ссылка на видео</string>
 </resources>

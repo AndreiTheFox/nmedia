@@ -30,7 +30,6 @@ class PostViewModel : ViewModel() {
     fun sharePost(id: Long) = repository.sharePost(id)
     fun removeById(id: Long) = repository.removeById(id)
     fun edit(post: Post) {
-
         edited.value = post
     }
 }

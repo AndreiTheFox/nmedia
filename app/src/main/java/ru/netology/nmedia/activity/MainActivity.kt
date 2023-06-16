@@ -1,11 +1,10 @@
 package ru.netology.nmedia.activity
 
-import android.content.Context
+
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.launch
 import androidx.activity.viewModels
 import ru.netology.nmedia.R
@@ -17,7 +16,8 @@ import ru.netology.nmedia.viewmodel.PostViewModel
 
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
-//    private var savedPostText: String = ""
+
+    //    private var savedPostText: String = ""
     private val binding: ActivityMainBinding
         get() = _binding!!
     val viewModel: PostViewModel by viewModels()
@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onShare(post: Post) {
-
             val intent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_TEXT, post.content)
@@ -46,7 +45,14 @@ class MainActivity : AppCompatActivity() {
             viewModel.sharePost(post.id)
 
         }
+
+        override fun onVideoClick(post: Post) {
+            val parsedUri = Uri.parse(post.video).toString().trim()
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(parsedUri))
+            startActivity(intent)
+        }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
@@ -104,9 +110,9 @@ fun counterWrite(incNumber: Int): String {
     return counterWrite
 }
 
-object AndroidUtils {
-    fun hideKeyboard(view: View) {
-        val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
-    }
-}
+//object AndroidUtils {
+//    fun hideKeyboard(view: View) {
+//        val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//        imm.hideSoftInputFromWindow(view.windowToken, 0)
+//    }
+//}

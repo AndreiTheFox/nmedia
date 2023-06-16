@@ -82,7 +82,7 @@
         android:contentDescription="@string/likes_button"
         app:icon="@drawable/ic_like_selector_24dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/content"
+        app:layout_constraintTop_toBottomOf="@id/videoUrl"
         tools:checked="true"
         tools:ignore="RedundantDescriptionCheck"
         tools:text="234" />
@@ -97,7 +97,7 @@
         android:contentDescription="@string/share_post_button"
         app:icon="@drawable/ic_share_selector_24dp"
         app:layout_constraintStart_toEndOf="@id/like"
-        app:layout_constraintTop_toBottomOf="@id/content"
+        app:layout_constraintTop_toBottomOf="@id/videoUrl"
         tools:ignore="RedundantDescriptionCheck"
         tools:text="1111" />
 
@@ -110,10 +110,27 @@
         android:contentDescription="@string/views_button"
         app:icon="@drawable/icon_views_24"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/content"
+        app:layout_constraintTop_toBottomOf="@id/videoUrl"
         tools:ignore="RedundantDescriptionCheck"
         tools:text="1111"
         />
-
-
+<ImageView
+    android:id="@+id/video"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:contentDescription="@string/video"
+    app:srcCompat="@drawable/ic_music_video_48"
+    app:layout_constraintTop_toBottomOf="@id/content"
+    android:clickable="true"
+    />
+<TextView
+    android:id="@+id/videoUrl"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:contentDescription="@string/video_url"
+    android:autoLink="web"
+    app:layout_constraintTop_toBottomOf="@id/video"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    />
 </androidx.constraintlayout.widget.ConstraintLayout>

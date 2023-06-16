@@ -12,7 +12,9 @@
         android:layout_height="match_parent"
         android:background="@android:color/transparent"
         android:gravity="start|top"
-        android:inputType="textMultiLine" />
+        android:inputType="textMultiLine"
+        android:autofillHints="Enter post text"
+        tools:ignore="LabelFor" />
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomAppBar"
@@ -28,7 +30,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/save"
         app:layout_anchor="@id/bottomAppBar"
-        app:srcCompat="@drawable/icon_send_24"
+        app:srcCompat="@drawable/ic_send_24"
         tools:ignore="MissingConstraints" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

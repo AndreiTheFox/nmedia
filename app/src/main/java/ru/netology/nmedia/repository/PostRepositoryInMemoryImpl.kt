@@ -16,7 +16,8 @@ class PostRepositoryInMemoryImpl : PostRepository {
             shared = 9999,
             views = 2031,
             likedByMe = false,
-            sharedByMe = false
+            sharedByMe = false,
+            video = "https://www.youtube.com/watch?v=kdxT-kY0DTQ"
         ),
         Post(
             id = nextId++,
@@ -27,7 +28,8 @@ class PostRepositoryInMemoryImpl : PostRepository {
             shared = 9999,
             views = 2031,
             likedByMe = false,
-            sharedByMe = false
+            sharedByMe = false,
+        video = "https://vk.com/video-39915550_456242702"
         ),
         Post(
             id = nextId++,

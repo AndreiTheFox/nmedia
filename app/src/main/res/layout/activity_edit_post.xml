@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/save"
         app:layout_anchor="@id/bottomAppBar"
-        app:srcCompat="@drawable/icon_send_24"
+        app:srcCompat="@drawable/ic_send_24"
         tools:ignore="MissingConstraints" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
