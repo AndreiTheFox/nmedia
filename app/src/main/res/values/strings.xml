@@ -18,4 +18,5 @@
     <string name="add_post">Add post</string>
     <string name="video">Video</string>
     <string name="video_url">Video URL</string>
+    <string name="play_video">Play video</string>
 </resources>

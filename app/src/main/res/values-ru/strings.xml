@@ -19,4 +19,5 @@
     <string name="add_post">Новый пост</string>
     <string name="video">Видео</string>
     <string name="video_url">Ссылка на видео</string>
+    <string name="play_video">Возпроизвести видео</string>
 </resources>

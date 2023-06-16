@@ -52,9 +52,9 @@ class PostViewHolder(
             if (post.video.isBlank()){
                 video.visibility = View.GONE
                 videoUrl.visibility = View.GONE
+                playVideo.visibility = View.GONE
             }
             else {
-                video.visibility = View.VISIBLE
                 videoUrl.text = post.video
             }
 
@@ -87,6 +87,9 @@ class PostViewHolder(
                 onInteractionListener.onShare(post)
             }
             video.setOnClickListener{
+                onInteractionListener.onVideoClick(post)
+            }
+            playVideo.setOnClickListener {
                 onInteractionListener.onVideoClick(post)
             }
         }
