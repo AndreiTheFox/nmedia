@@ -9,8 +9,11 @@
     <string name="Remove">Remove</string>
     <string name="Post_menu">Post Menu</string>
     <string name="post_text">Enter your text</string>
-    <string name="error_empty_content" >Content can`t be empty!</string>
+    <string name="error_empty_content">Content can`t be empty!</string>
     <string name="app_header">NMedia</string>
     <string name="publish">Publish</string>
     <string name="rollback_text">Rollback Text</string>
+    <string name="chooser_share_post">Share post</string>
+    <string name="save">Save</string>
+    <string name="add_post">Add post</string>
 </resources>

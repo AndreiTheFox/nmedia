@@ -1,7 +1,10 @@
 package ru.netology.nmedia.repository
 
+import android.content.Intent
+import android.provider.Settings.Global.getString
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import ru.netology.nmedia.R
 import ru.netology.nmedia.dto.Post
 
 class PostRepositoryInMemoryImpl : PostRepository {
@@ -98,7 +101,9 @@ class PostRepositoryInMemoryImpl : PostRepository {
         saveData()
     }
 
+
     override fun sharePost(id: Long) {
+
         posts = posts.map {
             if (it.id != id) it else it.copy(sharedByMe = true, shared = it.shared + 1)
         }

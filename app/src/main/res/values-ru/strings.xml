@@ -14,4 +14,7 @@
     <string name="app_header">НМедиа</string>
     <string name="publish">Опубликовать</string>
     <string name="rollback_text">Отменить изменения</string>
+    <string name="chooser_share_post">Поделиться постом</string>
+    <string name="save">Сохранить</string>
+    <string name="add_post">Новый пост</string>
 </resources>

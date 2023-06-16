@@ -1,6 +1,7 @@
 package ru.netology.nmedia.activity
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -8,6 +9,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.result.launch
 import androidx.activity.viewModels
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.OnInteractionListener
@@ -37,7 +39,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onShare(post: Post) {
+
+            val intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, post.content)
+                type = "text/plain"
+            }
+            val shareIntent = Intent.createChooser(intent, getString(R.string.chooser_share_post))
+            startActivity(shareIntent)
             viewModel.sharePost(post.id)
+
         }
     }
 
@@ -52,8 +63,10 @@ class MainActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 binding.groupSaveRollback.visibility = View.INVISIBLE
             }
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             }
+
             override fun afterTextChanged(s: Editable?) {
                 if (!editText.text.isNullOrBlank()) {
                     binding.groupSaveRollback.visibility = View.VISIBLE
@@ -101,7 +114,18 @@ class MainActivity : AppCompatActivity() {
                 } else binding.content.setText(savedPostText) //Иначе - возвращаем текст исходного поста
             }
         }
+        val newPostLauncher = registerForActivityResult(NewPostResultContract()) { result ->
+            result ?: return@registerForActivityResult
+            viewModel.changeContent(result)
+            viewModel.save()
+        }
+        binding.fab.setOnClickListener{
+            newPostLauncher.launch()
+        }
     }
+
+
+
 
 }//Конец Main
 
