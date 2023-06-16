@@ -29,7 +29,8 @@ class PostViewModel : ViewModel() {
     fun likeById(id: Long) = repository.likeById(id)
     fun sharePost(id: Long) = repository.sharePost(id)
     fun removeById(id: Long) = repository.removeById(id)
-    fun edit(post: Post) {
+    fun edit(post: Post): Post? {
         edited.value = post
+        return edited.value
     }
 }
