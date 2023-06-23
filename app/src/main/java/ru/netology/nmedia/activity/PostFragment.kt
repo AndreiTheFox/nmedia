@@ -33,7 +33,7 @@ class PostFragment : Fragment() {
         )
 
         val postId = arguments?.getLong("postId")
-        val openedPost = viewModel.data.value?.find { it.id == postId }
+ //       val openedPost = viewModel.data.value?.find { it.id == postId }
 
         val adapter = PostViewHolder(binding.post, object : OnInteractionListener {
             override fun onEdit(post: Post) {
@@ -56,17 +56,15 @@ class PostFragment : Fragment() {
             }
 
             override fun onShare(post: Post) {
-                if (openedPost != null) {
-                    val intent = Intent().apply {
-                        action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, openedPost.content)
-                        type = "text/plain"
-                    }
-                    val shareIntent =
-                        Intent.createChooser(intent, getString(R.string.chooser_share_post))
-                    startActivity(shareIntent)
-                    viewModel.sharePost(post.id)
+                val intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, post.content)
+                    type = "text/plain"
                 }
+                val shareIntent =
+                    Intent.createChooser(intent, getString(R.string.chooser_share_post))
+                startActivity(shareIntent)
+                viewModel.sharePost(post.id)
             }
 
             override fun onVideoClick(post: Post) {
@@ -76,9 +74,10 @@ class PostFragment : Fragment() {
             }
         })
 
-        viewModel.data.observe(this.viewLifecycleOwner) { posts ->
-            if (openedPost != null) {
-                adapter.bind(openedPost)
+        viewModel.data.observe(viewLifecycleOwner) { posts ->
+            val post = posts.find { it.id == postId } ?: return@observe
+            with(binding){
+                adapter.bind(post)
             }
         }
         return binding.root
