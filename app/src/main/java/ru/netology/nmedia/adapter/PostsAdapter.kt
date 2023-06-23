@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.R
-import ru.netology.nmedia.adjust.counterWrite
+import ru.netology.nmedia.util.counterWrite
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 
@@ -18,6 +18,7 @@ interface OnInteractionListener {
     fun onRemove(post: Post) {}
     fun onEdit(post: Post) {}
     fun onVideoClick(post: Post){}
+    fun onPostClick (post: Post){}
 }
 
 class PostsAdapter(private val onInteractionListener: OnInteractionListener) :
@@ -91,6 +92,9 @@ class PostViewHolder(
             }
             playVideo.setOnClickListener {
                 onInteractionListener.onVideoClick(post)
+            }
+            root.setOnClickListener{
+                onInteractionListener.onPostClick(post)
             }
         }
     }

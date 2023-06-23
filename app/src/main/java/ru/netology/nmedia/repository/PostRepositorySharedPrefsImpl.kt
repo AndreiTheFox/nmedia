@@ -19,6 +19,7 @@ class PostRepositorySharedPrefsImpl (context: Context,): PostRepository {
     init {
         prefs.getString(key,null)?.let {
             posts = gson.fromJson(it,type)
+            nextId = posts.maxOfOrNull { post -> post.id  }?.inc() ?: 1
             data.value= posts
         }
     }

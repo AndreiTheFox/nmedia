@@ -1,10 +1,8 @@
-package ru.netology.nmedia.adjust
+package ru.netology.nmedia.util
 
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-
-class AdjustFunctions {
     object AndroidUtils {
         fun hideKeyboard(view: View) {
             val imm =
@@ -12,7 +10,7 @@ class AdjustFunctions {
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
     }
-}
+
 //Функция преобразования входящего целого числа в строку с сокращением записи до вида 1.1К (тысячи) или 1.1М (миллионы)
 fun counterWrite(incNumber: Int): String {
     val counterWrite: String = when {
