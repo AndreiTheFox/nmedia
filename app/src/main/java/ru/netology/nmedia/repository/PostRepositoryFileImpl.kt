@@ -43,7 +43,7 @@ class PostRepositoryFileImpl(private val context: Context) : PostRepository {
     override fun sharePost(id: Long) {
 
         posts = posts.map {
-            if (it.id != id) it else it.copy(sharedByMe = true, shared = it.shared + 1)
+            if (it.id != id) it else it.copy(sharedByMe = true, shares = it.shares + 1)
         }
         saveData()
     }

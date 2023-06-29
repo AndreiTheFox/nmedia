@@ -45,7 +45,7 @@ class PostViewHolder(
             published.text = post.published
             content.text = post.content
             like.text = counterWrite(post.likes)
-            sharePostButton.text = counterWrite(post.shared)
+            sharePostButton.text = counterWrite(post.shares)
             viewsButton.text = counterWrite(post.views)
             like.isChecked = post.likedByMe
             sharePostButton.isChecked = post.sharedByMe
