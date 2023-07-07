@@ -19,4 +19,7 @@
     <string name="video">Video</string>
     <string name="video_url">Video URL</string>
     <string name="play_video">Play video</string>
+    <string name="notification_user_liked">%1$s liked %2$s</string>
+    <string name="channel_remote_description">Notifications from server</string>
+    <string name="channel_remote_name">Nmedia Notifications</string>
 </resources>

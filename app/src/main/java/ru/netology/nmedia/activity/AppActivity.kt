@@ -1,6 +1,9 @@
 package ru.netology.nmedia.activity
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.navigation.findNavController
@@ -17,13 +20,13 @@ class AppActivity : AppCompatActivity() {
 
         setContentView(binding.root)
         intent?.let {
-            if(it.action != Intent.ACTION_SEND){
+            if (it.action != Intent.ACTION_SEND) {
                 return@let
             }
             val text = it.getStringExtra(Intent.EXTRA_TEXT)
-            if (text.isNullOrBlank()){
+            if (text.isNullOrBlank()) {
                 Snackbar.make(binding.root, R.string.error_empty_content, LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok){
+                    .setAction(android.R.string.ok) {
                         finish()
                     }
                     .show()
@@ -32,9 +35,23 @@ class AppActivity : AppCompatActivity() {
             findNavController(R.id.nav_graph).navigate(
                 R.id.action_feedFragment_to_newPostFragment,
                 Bundle().apply {
-                textArg = text
+                    textArg = text
                 }
             )
         }
+
+        requestNotificationPermission()
     }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return
+        }
+        val permission = Manifest.permission.POST_NOTIFICATIONS
+        if (checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
+            return
+        }
+        requestPermissions(arrayOf(permission), 1)
+    }
+
 }
