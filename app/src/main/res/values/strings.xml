@@ -22,4 +22,6 @@
     <string name="notification_user_liked">%1$s liked %2$s</string>
     <string name="channel_remote_description">Notifications from server</string>
     <string name="channel_remote_name">Nmedia Notifications</string>
+    <string name="notification_user_new_message"> %1$s message to you: %2$s</string>
+    <string name="notification_user_new_post" > %1$s wrote: %2$s</string>
 </resources>

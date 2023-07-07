@@ -23,4 +23,6 @@
     <string name="notification_user_liked">%1$s поставил лайк посту %2$s</string>
     <string name="channel_remote_name">Nmedia уведомления</string>
     <string name="channel_remote_description">Уведомления от сервера</string>
+    <string name="notification_user_new_message">" %1$s сообщает вам: %2$s"</string>
+    <string name="notification_user_new_post">" %1$s опубликовал пост: %2$s"</string>
 </resources>
