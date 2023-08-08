@@ -24,4 +24,7 @@
     <string name="channel_remote_name">Nmedia Notifications</string>
     <string name="notification_user_new_message"> %1$s message to you: %2$s</string>
     <string name="notification_user_new_post" > %1$s wrote: %2$s</string>
+    <string name="empty_list">Empty list</string>
+    <string name="network_error">Network Error</string>
+    <string name="retry">Retry</string>
 </resources>

@@ -55,31 +55,31 @@ class PostFragment : Fragment() {
                 findNavController().navigateUp()
             }
 
-            override fun onShare(post: Post) {
-                val intent = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, post.content)
-                    type = "text/plain"
-                }
-                val shareIntent =
-                    Intent.createChooser(intent, getString(R.string.chooser_share_post))
-                startActivity(shareIntent)
-                viewModel.sharePost(post.id)
-            }
+//            override fun onShare(post: Post) {
+//                val intent = Intent().apply {
+//                    action = Intent.ACTION_SEND
+//                    putExtra(Intent.EXTRA_TEXT, post.content)
+//                    type = "text/plain"
+//                }
+//                val shareIntent =
+//                    Intent.createChooser(intent, getString(R.string.chooser_share_post))
+//                startActivity(shareIntent)
+//                viewModel.sharePost(post.id)
+//            }
 
-            override fun onVideoClick(post: Post) {
-                val parsedUri = Uri.parse(post.video).toString().trim()
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(parsedUri))
-                startActivity(intent)
-            }
+//            override fun onVideoClick(post: Post) {
+//                val parsedUri = Uri.parse(post.video).toString().trim()
+//                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(parsedUri))
+//                startActivity(intent)
+//            }
         })
 
-        viewModel.data.observe(viewLifecycleOwner) { posts ->
-            val post = posts.find { it.id == postId } ?: return@observe
-            with(binding){
-                adapter.bind(post)
-            }
-        }
+//        viewModel.data.observe(viewLifecycleOwner) { posts ->
+//            val post = posts.find { it.id == postId } ?: return@observe
+//            with(binding){
+//                adapter.bind(post)
+//            }
+//        }
         return binding.root
     }
 }

@@ -18,10 +18,10 @@ data class PostEntity(
     val sharedByMe: Boolean = false,
     val video: String = "",
 ) {
-    fun toDto() = Post(id, author,content,published,likes,likedByMe,shares,views,sharedByMe,video)
+    fun toDto() = Post(id, author,content,published,likes,likedByMe,)//shares,views,sharedByMe,video)
     companion object {
         fun fromDto (dto: Post) =
-            PostEntity(dto.id, dto.author, dto.content, dto.published, dto.likes, dto.likedByMe, dto.shares, dto.views, dto.sharedByMe, dto.video)
+            PostEntity(dto.id, dto.author, dto.content, dto.published, dto.likes, dto.likedByMe,)// dto.shares, dto.views, dto.sharedByMe, dto.video)
     }
 }
 

@@ -25,4 +25,7 @@
     <string name="channel_remote_description">Уведомления от сервера</string>
     <string name="notification_user_new_message">" %1$s сообщает вам: %2$s"</string>
     <string name="notification_user_new_post">" %1$s опубликовал пост: %2$s"</string>
+    <string name="empty_list">Нет постов</string>
+    <string name="network_error">Ошибка сети</string>
+    <string name="retry">Повторить</string>
 </resources>

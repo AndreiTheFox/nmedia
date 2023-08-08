@@ -16,6 +16,7 @@ import ru.netology.nmedia.databinding.ActivityAppBinding
 class AppActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestNotificationPermission()
         val binding = ActivityAppBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
@@ -32,15 +33,16 @@ class AppActivity : AppCompatActivity() {
                     .show()
                 return@let
             }
-            findNavController(R.id.nav_graph).navigate(
+            intent.removeExtra(Intent.EXTRA_TEXT)
+
+            findNavController(R.id.nav_graph)
+                .navigate(
                 R.id.action_feedFragment_to_newPostFragment,
                 Bundle().apply {
                     textArg = text
                 }
             )
         }
-
-        requestNotificationPermission()
     }
 
     private fun requestNotificationPermission() {
