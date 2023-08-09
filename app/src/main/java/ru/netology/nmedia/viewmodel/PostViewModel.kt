@@ -63,17 +63,27 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         edited.value = edited.value?.copy(content = text)
     }
 
-    fun likeById(id: Long) {
+    fun likePost(post: Post) {
+        val id = post.id
         thread {
-        repository.likeById(id)
-        loadPosts()
+            _data.postValue(
+                _data.value?.copy(posts = getScreenPosts().map {
+                    if (it.id != id) it else it.copy(
+                        likedByMe = !it.likedByMe,
+                        likes = if (it.likedByMe) it.likes - 1 else it.likes + 1
+                    )
+                }
+                )
+            )
+            repository.likePost(post)
         }
     }
+
     fun removeById(id: Long) {
         thread {
-            val old = _data.value?.posts.orEmpty()
+            val old = getScreenPosts()
             _data.postValue(
-                _data.value?.copy(posts = _data.value?.posts.orEmpty()
+                _data.value?.copy(posts = getScreenPosts()
                     .filter { it.id != id }
                 )
             )
@@ -83,5 +93,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 _data.postValue(_data.value?.copy(posts = old))
             }
         }
+    }
+
+    private fun getScreenPosts(): List<Post> {
+        return _data.value?.posts
+            ?: throw RuntimeException("List of posts is NULL - something missing")
     }
 }
