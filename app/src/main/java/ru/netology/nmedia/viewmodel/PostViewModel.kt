@@ -2,16 +2,12 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
-import okhttp3.MediaType.Companion.toMediaType
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.repository.PostRepository.PostCallback
 import ru.netology.nmedia.util.SingleLiveEvent
-import java.io.IOException
-import java.lang.Exception
 import java.lang.RuntimeException
-import kotlin.concurrent.thread
 
 private val empty = Post(id = 0)
 
@@ -79,10 +75,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
     fun likePostAsync(post: Post) {
-        val id = post.id
+        //val likedPostId = post.id
             _data.postValue(
                 _data.value?.copy(posts = getScreenPosts().map {
-                    if (it.id != id) it else it.copy(
+                    if (it.id != post.id) it else it.copy(
                         likedByMe = !it.likedByMe,
                         likes = if (it.likedByMe) it.likes - 1 else it.likes + 1
                     )
