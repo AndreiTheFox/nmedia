@@ -2,6 +2,8 @@ package ru.netology.nmedia.activity
 
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.R
+import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
@@ -20,13 +23,14 @@ import kotlin.concurrent.thread
 
 class FeedFragment : Fragment() {
     private val viewModel: PostViewModel by activityViewModels()
+
     @SuppressLint("RestrictedApi")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-     //   super.onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)
         val binding = FragmentFeedBinding.inflate(
             inflater,
             container,
@@ -38,35 +42,34 @@ class FeedFragment : Fragment() {
 //        )
 
         val adapter = PostsAdapter(object : OnInteractionListener {
-//            override fun onPostClick(post: Post) {
-//                findNavController().navigate(
-//                    R.id.action_feedFragment_to_postFragment,
-//                    Bundle().apply {
-//                        putLong("postId", post.id)
-//                    }
-//                )
-//            }
-//
+            override fun onPostClick(post: Post) {
+                findNavController().navigate(
+                    R.id.action_feedFragment_to_postFragment,
+                    Bundle().apply {
+                        putLong("postId", post.id)
+                    }
+                )
+            }
+
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
-            }
-//            override fun onEdit(post: Post) {
-//                viewModel.edit(post)
-//                findNavController().navigate(
-//                    R.id.action_feedFragment_to_newPostFragment,
-//                    Bundle().apply {
-//                        textArg = post.content
-//                    }
-//                )
-//            }
-
-            override fun onLike(post: Post) {
-                viewModel.likePost(post)
+                findNavController().navigate(
+                    R.id.action_feedFragment_to_newPostFragment,
+                    Bundle().apply {
+                        textArg = post.content
+                    }
+                )
             }
 
             override fun onRemove(post: Post) {
-                viewModel.removeById(post.id)
+                viewModel.removeByIdAsync(post.id)
             }
+
+            override fun onLike(post: Post) {
+                viewModel.likePostAsync(post)
+            }
+//
+
 
 //            override fun onShare(post: Post) {
 //                val intent = Intent().apply {
@@ -80,11 +83,11 @@ class FeedFragment : Fragment() {
 //                viewModel.sharePost(post.id)
 //            }
 
-//            override fun onVideoClick(post: Post) {
-//                val parsedUri = Uri.parse(post.video).toString().trim()
-//                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(parsedUri))
-//                startActivity(intent)
-//            }
+            override fun onVideoClick(post: Post) {
+                val parsedUri = Uri.parse(post.video).toString().trim()
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(parsedUri))
+                startActivity(intent)
+            }
         })
         binding.list.adapter = adapter
 
@@ -94,7 +97,7 @@ class FeedFragment : Fragment() {
             binding.empty.isVisible = state.empty
             binding.progress.isVisible = state.loading
         }
-        binding.retryButton.setOnClickListener{
+        binding.retryButton.setOnClickListener {
             viewModel.loadPosts()
         }
         binding.fab.setOnClickListener {

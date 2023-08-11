@@ -45,19 +45,19 @@ class PostViewHolder(
             published.text = post.published
             content.text = post.content
             like.text = counterWrite(post.likes)
-//            sharePostButton.text = counterWrite(post.shares)
-//            viewsButton.text = counterWrite(post.views)
+            sharePostButton.text = counterWrite(post.shares)
+            viewsButton.text = counterWrite(post.views)
             like.isChecked = post.likedByMe
             sharePostButton.isChecked = post.sharedByMe
             sharePostButton.isCheckable = !post.sharedByMe
-//            if (post.video.isNullOrBlank()){
-//                video.visibility = View.GONE
-//                videoUrl.visibility = View.GONE
-//                playVideo.visibility = View.GONE
-//            }
-//            else {
-//                videoUrl.text = post.video
-//            }
+            if (post.video.isNullOrBlank()){
+                video.visibility = View.GONE
+                videoUrl.visibility = View.GONE
+                playVideo.visibility = View.GONE
+            }
+            else {
+                videoUrl.text = post.video
+            }
 
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
