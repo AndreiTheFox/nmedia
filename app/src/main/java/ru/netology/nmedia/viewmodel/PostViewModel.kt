@@ -23,6 +23,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         loadPosts()
+      //  println(data.value?.posts?.get(1)?.authorAvatar)
     }
     fun loadPosts() {
         _data.postValue(FeedModel(loading = true))
@@ -75,7 +76,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
     fun likePostAsync(post: Post) {
-        //val likedPostId = post.id
             _data.postValue(
                 _data.value?.copy(posts = getScreenPosts().map {
                     if (it.id != post.id) it else it.copy(

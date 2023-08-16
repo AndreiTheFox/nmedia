@@ -11,7 +11,15 @@ data class Post(
 
 )
 {
+    val authorAvatar: String = ""
     val shares: Int = 0
     val views: Int = 0
-    val video: String = ""
+//    val video: String = ""
+    val attachment: Attachment? = null
+}
+data class Attachment(
+    val url: String = "",
+    val type: String = ""
+){
+    val description : String = ""
 }

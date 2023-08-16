@@ -47,12 +47,11 @@
         android:layout_width="24dp"
         android:layout_height="wrap_content"
         android:contentDescription="@string/Post_menu"
+        android:paddingTop="0dp"
+        app:icon="@drawable/ic_more_vert_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:icon="@drawable/ic_more_vert_24"
-        android:paddingTop="0dp"
-        tools:ignore="ImageContrastCheck"
-        />
+        tools:ignore="ImageContrastCheck,TouchTargetSizeCheck" />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/top_post_barrier"
@@ -84,9 +83,9 @@
         android:contentDescription="@string/likes_button"
         app:icon="@drawable/ic_like_selector_24dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/videoUrl"
+        app:layout_constraintTop_toBottomOf="@id/attachment"
         tools:checked="true"
-        tools:ignore="RedundantDescriptionCheck"
+        tools:ignore="RedundantDescriptionCheck,TouchTargetSizeCheck"
         tools:text="234" />
 
     <com.google.android.material.button.MaterialButton
@@ -99,8 +98,8 @@
         android:contentDescription="@string/share_post_button"
         app:icon="@drawable/ic_share_selector_24dp"
         app:layout_constraintStart_toEndOf="@id/like"
-        app:layout_constraintTop_toBottomOf="@id/videoUrl"
-        tools:ignore="RedundantDescriptionCheck"
+        app:layout_constraintTop_toBottomOf="@id/attachment"
+        tools:ignore="RedundantDescriptionCheck,TouchTargetSizeCheck"
         tools:text="1111" />
 
     <com.google.android.material.button.MaterialButton
@@ -112,38 +111,17 @@
         android:contentDescription="@string/views_button"
         app:icon="@drawable/icon_views_24"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/videoUrl"
-        tools:ignore="RedundantDescriptionCheck"
-        tools:text="1111"
-        />
+        app:layout_constraintTop_toBottomOf="@id/attachment"
+        tools:ignore="RedundantDescriptionCheck,TouchTargetSizeCheck"
+        tools:text="1111" />
 <ImageView
-    android:id="@+id/video"
-    android:layout_width="match_parent"
+    android:id="@+id/attachment"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:contentDescription="@string/video"
+    android:contentDescription="@string/attachment"
     app:srcCompat="@drawable/videoclip"
     app:layout_constraintTop_toBottomOf="@id/content"
-    android:clickable="true"
+    android:clickable="false"
     />
-<TextView
-    android:id="@+id/videoUrl"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:contentDescription="@string/video_url"
-    android:autoLink="web"
-    app:layout_constraintTop_toBottomOf="@id/video"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    />
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/playVideo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/play_video"
-        app:layout_constraintStart_toStartOf="@id/video"
-        app:layout_constraintEnd_toEndOf="@id/video"
-        app:layout_constraintTop_toTopOf="@id/video"
-        app:layout_constraintBottom_toBottomOf="@id/video"
-        app:srcCompat = "@drawable/ic_play_circle_outline_24"
-        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

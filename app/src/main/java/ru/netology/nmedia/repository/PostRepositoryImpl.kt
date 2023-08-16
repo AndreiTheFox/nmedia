@@ -29,7 +29,7 @@ class PostRepositoryImpl : PostRepository {
 
     override fun getAllAsync(callback: PostRepository.PostCallback<List<Post>>) {
         val request: Request = Request.Builder()
-            .url("${BASE_URL}/api/slow/posts")
+            .url("${BASE_URL}/api/posts")
             .build()
         client.newCall(request)
             .enqueue(object : Callback {
@@ -50,7 +50,7 @@ class PostRepositoryImpl : PostRepository {
     override fun saveAsync(post: Post, callback: PostRepository.PostCallback<Unit>) {
         val request: Request = Request.Builder()
             .post(gson.toJson(post).toRequestBody(jsonType))
-            .url("${BASE_URL}/api/slow/posts")
+            .url("${BASE_URL}/api/posts")
             .build()
         client.newCall(request)
             .enqueue(object : Callback {
@@ -66,7 +66,7 @@ class PostRepositoryImpl : PostRepository {
     override fun removeByIdAsync(id: Long, callback: PostRepository.PostCallback<Unit>) {
         val request: Request = Request.Builder()
             .delete()
-            .url("${BASE_URL}/api/slow/posts/$id")
+            .url("${BASE_URL}/api/posts/$id")
             .build()
         client.newCall(request)
             .enqueue(object : Callback {

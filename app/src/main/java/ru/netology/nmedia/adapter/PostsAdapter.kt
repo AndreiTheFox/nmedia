@@ -8,17 +8,19 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.R
-import ru.netology.nmedia.util.counterWrite
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.util.counterWrite
+import ru.netology.nmedia.util.glideDownloadFullImage
+import ru.netology.nmedia.util.glideDownloadRoundImage
 
 interface OnInteractionListener {
     fun onLike(post: Post) {}
     fun onShare(post: Post) {}
     fun onRemove(post: Post) {}
     fun onEdit(post: Post) {}
-    fun onVideoClick(post: Post){}
-    fun onPostClick (post: Post){}
+//    fun onVideoClick(post: Post) {}
+    fun onPostClick(post: Post) {}
 }
 
 class PostsAdapter(private val onInteractionListener: OnInteractionListener) :
@@ -39,8 +41,32 @@ class PostViewHolder(
     private val binding: CardPostBinding,
     private val onInteractionListener: OnInteractionListener,
 ) : RecyclerView.ViewHolder(binding.root) {
+    private val serverPathUrl = "http://10.0.2.2:9999/"
+    private val avatarsPathUrl = "${serverPathUrl}/avatars"
+    private val attachmentsUrl = "${serverPathUrl}/images"
     fun bind(post: Post) {
         binding.apply {
+            val downloadAvatarUrl = "${avatarsPathUrl}/${post.authorAvatar}"
+
+            if (post.attachment != null) {
+                val downloadAttachUrl = "${attachmentsUrl}/${post.attachment.url}"
+                glideDownloadFullImage(downloadAttachUrl, binding.attachment)
+            }
+            else {
+                binding.attachment.visibility = View.GONE
+            }
+//            Glide.with(avatar)
+//                .load(downloadAvatarUrl)
+//                .placeholder(R.drawable.ic_loading_24)
+//                .error(R.drawable.ic_error_24)
+//                .timeout(10_000)
+//                .centerInside()
+//                .centerCrop()
+//                .circleCrop()
+//                .into(avatar)
+            glideDownloadRoundImage(downloadAvatarUrl,binding.avatar)
+
+
             author.text = post.author
             published.text = post.published
             content.text = post.content
@@ -50,14 +76,14 @@ class PostViewHolder(
             like.isChecked = post.likedByMe
             sharePostButton.isChecked = post.sharedByMe
             sharePostButton.isCheckable = !post.sharedByMe
-            if (post.video.isNullOrBlank()){
-                video.visibility = View.GONE
-                videoUrl.visibility = View.GONE
-                playVideo.visibility = View.GONE
-            }
-            else {
-                videoUrl.text = post.video
-            }
+
+//            if (post.video.isNullOrBlank()) {
+//                video.visibility = View.GONE
+//                videoUrl.visibility = View.GONE
+//                playVideo.visibility = View.GONE
+//            } else {
+//                videoUrl.text = post.video
+//            }
 
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
@@ -87,13 +113,13 @@ class PostViewHolder(
             sharePostButton.setOnClickListener {
                 onInteractionListener.onShare(post)
             }
-            video.setOnClickListener{
-                onInteractionListener.onVideoClick(post)
-            }
-            playVideo.setOnClickListener {
-                onInteractionListener.onVideoClick(post)
-            }
-            root.setOnClickListener{
+//            video.setOnClickListener {
+//                onInteractionListener.onVideoClick(post)
+//            }
+//            playVideo.setOnClickListener {
+//                onInteractionListener.onVideoClick(post)
+//            }
+            root.setOnClickListener {
                 onInteractionListener.onPostClick(post)
             }
         }

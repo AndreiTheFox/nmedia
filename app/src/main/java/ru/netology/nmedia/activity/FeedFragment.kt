@@ -2,8 +2,6 @@ package ru.netology.nmedia.activity
 
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +17,6 @@ import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.viewmodel.PostViewModel
-import kotlin.concurrent.thread
 
 class FeedFragment : Fragment() {
     private val viewModel: PostViewModel by activityViewModels()
@@ -68,8 +65,6 @@ class FeedFragment : Fragment() {
             override fun onLike(post: Post) {
                 viewModel.likePostAsync(post)
             }
-//
-
 
 //            override fun onShare(post: Post) {
 //                val intent = Intent().apply {
@@ -83,14 +78,14 @@ class FeedFragment : Fragment() {
 //                viewModel.sharePost(post.id)
 //            }
 
-            override fun onVideoClick(post: Post) {
-                val parsedUri = Uri.parse(post.video).toString().trim()
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(parsedUri))
-                startActivity(intent)
-            }
+//            override fun onVideoClick(post: Post) {
+//                val parsedUri = Uri.parse(post.video).toString().trim()
+//                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(parsedUri))
+//                startActivity(intent)
+//            }
         })
-        binding.list.adapter = adapter
 
+        binding.list.adapter = adapter
         viewModel.data.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.posts)
             binding.errorGroup.isVisible = state.error
@@ -104,10 +99,8 @@ class FeedFragment : Fragment() {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
         }
         binding.swiperefresh.setOnRefreshListener {
-
             viewModel.loadPosts()
             binding.swiperefresh.isRefreshing = false
-
         }
         return binding.root
     }
