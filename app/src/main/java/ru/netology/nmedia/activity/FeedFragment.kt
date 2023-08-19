@@ -33,11 +33,6 @@ class FeedFragment : Fragment() {
             container,
             false
         )
-
-//        val viewModel: PostViewModel by viewModels(
-//            ownerProducer = ::requireParentFragment
-//        )
-
         val adapter = PostsAdapter(object : OnInteractionListener {
             override fun onPostClick(post: Post) {
                 findNavController().navigate(
@@ -47,7 +42,6 @@ class FeedFragment : Fragment() {
                     }
                 )
             }
-
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
                 findNavController().navigate(
@@ -65,32 +59,14 @@ class FeedFragment : Fragment() {
             override fun onLike(post: Post) {
                 viewModel.likePostAsync(post)
             }
-
-//            override fun onShare(post: Post) {
-//                val intent = Intent().apply {
-//                    action = Intent.ACTION_SEND
-//                    putExtra(Intent.EXTRA_TEXT, post.content)
-//                    type = "text/plain"
-//                }
-//                val shareIntent =
-//                    Intent.createChooser(intent, getString(R.string.chooser_share_post))
-//                startActivity(shareIntent)
-//                viewModel.sharePost(post.id)
-//            }
-
-//            override fun onVideoClick(post: Post) {
-//                val parsedUri = Uri.parse(post.video).toString().trim()
-//                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(parsedUri))
-//                startActivity(intent)
-//            }
         })
-
         binding.list.adapter = adapter
         viewModel.data.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.posts)
             binding.errorGroup.isVisible = state.error
             binding.empty.isVisible = state.empty
             binding.progress.isVisible = state.loading
+            binding.serverError.isVisible = state.serverError
         }
         binding.retryButton.setOnClickListener {
             viewModel.loadPosts()

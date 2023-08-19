@@ -1,6 +1,7 @@
 package ru.netology.nmedia.viewmodel
 
 import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.*
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModel
@@ -20,18 +21,34 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
+    val toastServerError: Toast = Toast.makeText(
+    getApplication(),
+    "Ошибка сервера.\nПопробуй еще раз.",
+    Toast.LENGTH_SHORT
+    )
 
     init {
         loadPosts()
     }
+
     fun loadPosts() {
         _data.postValue(FeedModel(loading = true))
         repository.getAllAsync(object : PostCallback<List<Post>> {
-            override fun onSuccess(posts: List<Post>) {
-                _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
+            override fun onSuccess(result: List<Post>) {
+                _data.postValue(FeedModel(posts = result, empty = result.isEmpty()))
             }
+            override fun onError(e: RuntimeException) {
 
-            override fun onError() {
+//                val first = e.message?.substringAfter("status")
+//                val second = first?.substring(2, endIndex = 5)
+//
+//                println(second)
+
+                Toast.makeText(
+                    getApplication(),
+                    "Ошибка загрузки постов.",
+                    Toast.LENGTH_SHORT
+                ).show()
                 _data.postValue(FeedModel(error = true))
             }
         })
@@ -41,13 +58,13 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         val editPost = edited.value
         if (editPost != null) {
             edited.value?.let {
-                repository.saveAsync(editPost, object : PostCallback<Unit> {
-                    override fun onSuccess(posts: Unit) {
+                repository.saveAsync(editPost, object : PostCallback<Post> {
+                    override fun onSuccess(result: Post) {
                         _postCreated.postValue(Unit)
                     }
-
-                    override fun onError() {
-                        _data.postValue(FeedModel(error = true))
+                    override fun onError(e: RuntimeException) {
+                        toastServerError.show()
+   //                     _data.postValue(FeedModel(error = true))
                     }
                 }
                 )
@@ -64,39 +81,31 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             )
         )
         repository.removeByIdAsync(id, object : PostCallback<Unit> {
-            override fun onSuccess(posts: Unit) {
+            override fun onSuccess(result: Unit) {
             }
 
-            override fun onError() {
+            override fun onError(e: RuntimeException) {
+                toastServerError.show()
                 _data.postValue(_data.value?.copy(posts = old))
             }
         })
     }
-    fun likePostAsync(likedPost: Post) {
-            _data.postValue(
-                _data.value?.copy(posts = getScreenPosts().map {
-                    if (it.id != likedPost.id) it else it.copy(
-                        likedByMe = !it.likedByMe,
-                        likes = if (it.likedByMe) it.likes - 1 else it.likes + 1
-                    )
-                }
-                )
-            )
-            repository.likePostAsync(likedPost,object : PostCallback<Post> {
-                override fun onSuccess(result: Post) {
-                   val updatedPosts =  _data.value?.posts?.map {
-                        if (it.id == result.id){
-                            result
-                        }
-                        else it
-                    }.orEmpty()
-                    _data.postValue(_data.value?.copy(posts = updatedPosts))
 
-                }
-                override fun onError() {
-                    _data.postValue(FeedModel(error = true))
-                }
-            })
+    fun likePostAsync(likedPost: Post) {
+        repository.likePostAsync(likedPost, object : PostCallback<Post> {
+            override fun onSuccess(result: Post) {
+                val updatedPosts = _data.value?.posts?.map {
+                    if (it.id == result.id) {
+                        result
+                    } else it
+                }.orEmpty()
+                _data.postValue(_data.value?.copy(posts = updatedPosts))
+            }
+
+            override fun onError(e: RuntimeException) {
+                toastServerError.show()
+            }
+        })
     }
 
     fun edit(post: Post) {
