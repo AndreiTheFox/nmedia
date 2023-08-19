@@ -47,26 +47,14 @@ class PostViewHolder(
     fun bind(post: Post) {
         binding.apply {
             val downloadAvatarUrl = "${avatarsPathUrl}/${post.authorAvatar}"
-
             if (post.attachment != null) {
                 val downloadAttachUrl = "${attachmentsUrl}/${post.attachment.url}"
                 glideDownloadFullImage(downloadAttachUrl, binding.attachment)
-            }
+                binding.attachment.visibility = View.VISIBLE }
             else {
                 binding.attachment.visibility = View.GONE
             }
-//            Glide.with(avatar)
-//                .load(downloadAvatarUrl)
-//                .placeholder(R.drawable.ic_loading_24)
-//                .error(R.drawable.ic_error_24)
-//                .timeout(10_000)
-//                .centerInside()
-//                .centerCrop()
-//                .circleCrop()
-//                .into(avatar)
             glideDownloadRoundImage(downloadAvatarUrl,binding.avatar)
-
-
             author.text = post.author
             published.text = post.published
             content.text = post.content
@@ -76,15 +64,6 @@ class PostViewHolder(
             like.isChecked = post.likedByMe
             sharePostButton.isChecked = post.sharedByMe
             sharePostButton.isCheckable = !post.sharedByMe
-
-//            if (post.video.isNullOrBlank()) {
-//                video.visibility = View.GONE
-//                videoUrl.visibility = View.GONE
-//                playVideo.visibility = View.GONE
-//            } else {
-//                videoUrl.text = post.video
-//            }
-
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
@@ -105,20 +84,14 @@ class PostViewHolder(
                     }
                 }.show()
             }
-
             like.setOnClickListener {
+                like.isChecked = !like.isChecked
                 onInteractionListener.onLike(post)
             }
 
             sharePostButton.setOnClickListener {
                 onInteractionListener.onShare(post)
             }
-//            video.setOnClickListener {
-//                onInteractionListener.onVideoClick(post)
-//            }
-//            playVideo.setOnClickListener {
-//                onInteractionListener.onVideoClick(post)
-//            }
             root.setOnClickListener {
                 onInteractionListener.onPostClick(post)
             }
@@ -130,7 +103,6 @@ class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
     override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
         return oldItem.id == newItem.id
     }
-
     override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {
         return oldItem == newItem
     }

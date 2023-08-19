@@ -12,7 +12,6 @@ data class Post(
     val shares: Int = 0,
     val views: Int = 0,
     val attachment: Attachment? = null
-
 )
 data class Attachment(
     val url: String = "",

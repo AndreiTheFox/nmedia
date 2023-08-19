@@ -51,6 +51,7 @@ fun glideDownloadFullImage (url:String, view: View)  {
     Glide.with(view)
         .load(url)
         .error(R.drawable.ic_error_24)
+        .fitCenter()
         .centerCrop()
         .centerInside()
         .timeout(10_000)

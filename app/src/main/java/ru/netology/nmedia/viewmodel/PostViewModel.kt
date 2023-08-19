@@ -23,7 +23,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         loadPosts()
-      //  println(data.value?.posts?.get(1)?.authorAvatar)
     }
     fun loadPosts() {
         _data.postValue(FeedModel(loading = true))
@@ -66,28 +65,33 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         )
         repository.removeByIdAsync(id, object : PostCallback<Unit> {
             override fun onSuccess(posts: Unit) {
-                //Ничего не делать
             }
 
             override fun onError() {
                 _data.postValue(_data.value?.copy(posts = old))
-//                _data.postValue(FeedModel(error = true))
             }
         })
     }
-    fun likePostAsync(post: Post) {
+    fun likePostAsync(likedPost: Post) {
             _data.postValue(
                 _data.value?.copy(posts = getScreenPosts().map {
-                    if (it.id != post.id) it else it.copy(
+                    if (it.id != likedPost.id) it else it.copy(
                         likedByMe = !it.likedByMe,
                         likes = if (it.likedByMe) it.likes - 1 else it.likes + 1
                     )
                 }
                 )
             )
-            repository.likePostAsync(post,object : PostCallback<Unit> {
-                override fun onSuccess(posts: Unit) {
-                    //Ничего не делать
+            repository.likePostAsync(likedPost,object : PostCallback<Post> {
+                override fun onSuccess(result: Post) {
+                   val updatedPosts =  _data.value?.posts?.map {
+                        if (it.id == result.id){
+                            result
+                        }
+                        else it
+                    }.orEmpty()
+                    _data.postValue(_data.value?.copy(posts = updatedPosts))
+
                 }
                 override fun onError() {
                     _data.postValue(FeedModel(error = true))

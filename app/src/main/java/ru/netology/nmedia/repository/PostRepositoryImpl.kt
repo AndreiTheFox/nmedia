@@ -21,12 +21,10 @@ class PostRepositoryImpl : PostRepository {
         .build()
     private val gson = Gson()
     private val typeToken = object : TypeToken<List<Post>>() {}
-
     companion object {
         private const val BASE_URL = "http://10.0.2.2:9999"
         private val jsonType = "application/json".toMediaType()
     }
-
     override fun getAllAsync(callback: PostRepository.PostCallback<List<Post>>) {
         val request: Request = Request.Builder()
             .url("${BASE_URL}/api/posts")
@@ -46,7 +44,6 @@ class PostRepositoryImpl : PostRepository {
                 }
             })
     }
-
     override fun saveAsync(post: Post, callback: PostRepository.PostCallback<Unit>) {
         val request: Request = Request.Builder()
             .post(gson.toJson(post).toRequestBody(jsonType))
@@ -79,17 +76,16 @@ class PostRepositoryImpl : PostRepository {
             }
             )
     }
+    override fun likePostAsync(likedPost: Post, callback: PostRepository.PostCallback<Post>) {
+        val id = likedPost.id
 
-    override fun likePostAsync(post: Post, callback: PostRepository.PostCallback<Unit>) {
-        val id = post.id
-
-        val request = if (!post.likedByMe) {
+        val request = if (!likedPost.likedByMe) {
             Request.Builder()
                 .post(gson.toJson(id).toRequestBody(jsonType))
                 .url("${BASE_URL}/api/posts/$id/likes")
                 .build()
         } else {
-            if (post.likes > 0) {
+            if (likedPost.likes > 0) {
                 Request.Builder()
                     .delete(gson.toJson(id).toRequestBody(jsonType))
                     .url("${BASE_URL}/api/posts/$id/likes")
@@ -99,7 +95,13 @@ class PostRepositoryImpl : PostRepository {
         client.newCall(request)
             .enqueue(object : Callback {
                 override fun onResponse(call: Call, response: Response) {
-                    callback.onSuccess(Unit)
+                    val result =response?.body?.string()?.let {
+                        gson.fromJson(it, Post::class.java)
+                    }
+                    if (result==null){
+                        callback.onError()
+                    }
+
                 }
                 override fun onFailure(call: Call, e: IOException) {
                     callback.onError()
@@ -107,12 +109,4 @@ class PostRepositoryImpl : PostRepository {
             }
             )
     }
-//
-//    override fun sharePost(id: Long) {
-//        TODO("Not yet implemented")
-//    }
-//
-
-
-
 }
