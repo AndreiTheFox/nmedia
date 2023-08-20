@@ -9,20 +9,25 @@ import kotlin.RuntimeException
 
 class PostRepositoryImpl : PostRepository {
 
-    override fun getAll(): List<Post> {
-        return PostApi.service.getAll()
-            .execute()
-            .let {
-                it.body() ?: throw RuntimeException("body is null")
-            }
-    }
+//    override fun getAll(): List<Post> {
+//        return PostApi.service.getAll()
+//            .execute()
+//            .let {
+//                it.body() ?: throw RuntimeException("body is null")
+//  //              it.body() ?: throw RuntimeException(it.code())
+//            }
+//    }
 
     override fun getAllAsync(callback: PostRepository.PostCallback<List<Post>>) {
         PostApi.service.getAll()
             .enqueue(object : Callback<List<Post>> {
                 override fun onResponse(call: Call<List<Post>>, response: Response<List<Post>>) {
                     if (!response.isSuccessful) {
-                        callback.onError(RuntimeException(response.errorBody()?.string()))
+                        if (response.code() != null) {
+                            callback.onError(response.code())
+                        } else {
+                            callback.onError(RuntimeException(response.errorBody()?.string()))
+                        }
                         return
                     }
                     val body = (response.body() ?: run {
@@ -79,7 +84,7 @@ class PostRepositoryImpl : PostRepository {
     }
 
     override fun likePostAsync(likedPost: Post, callback: PostRepository.PostCallback<Post>) {
-       val callbackLikeOrDislike =  object : Callback<Post>  {
+        val callbackLikeOrDislike = object : Callback<Post> {
             override fun onResponse(call: Call<Post>, response: Response<Post>) {
                 if (!response.isSuccessful) {
                     callback.onError(RuntimeException(response.errorBody()?.string()))
@@ -90,6 +95,7 @@ class PostRepositoryImpl : PostRepository {
                 }) as Post
                 callback.onSuccess(body)
             }
+
             override fun onFailure(call: Call<Post>, t: Throwable) {
                 callback.onError(RuntimeException(t))
             }

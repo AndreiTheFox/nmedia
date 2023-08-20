@@ -1,10 +1,13 @@
 package ru.netology.nmedia.util
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import ru.netology.nmedia.R
 
 object AndroidUtils {
@@ -47,13 +50,46 @@ fun glideDownloadRoundImage (url:String, view: View)  {
         .circleCrop()
         .into(view as ImageView)
 }
-fun glideDownloadFullImage (url:String, view: View)  {
-    Glide.with(view)
+//fun glideDownloadFullImage (url:String, view: View)  {
+//    Glide.with(view)
+//        .load(url)
+//        .error(R.drawable.ic_error_24)
+//        .fitCenter()
+//        .centerCrop()
+//        .centerInside()
+//        .timeout(10_000)
+//        .into(view as ImageView)
+//}
+fun glideDownloadFullImage (url:String, imageView: ImageView, context: Context) {
+    Glide.with(imageView)
         .load(url)
         .error(R.drawable.ic_error_24)
         .fitCenter()
         .centerCrop()
         .centerInside()
-        .timeout(10_000)
-        .into(view as ImageView)
+        .timeout(10000)
+        .into(object : CustomTarget<Drawable>() {
+            override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
+// Получаем размеры изображения
+                val width = resource.intrinsicWidth
+                val height = resource.intrinsicHeight
+
+                // Получаем размеры экрана
+                val displayMetrics = context.resources.displayMetrics
+                val screenWidth = displayMetrics.widthPixels
+
+                // Рассчитываем высоту изображения в соответствии с шириной экрана
+                val calculatedHeight = (screenWidth.toFloat() / width.toFloat() * height).toInt()
+
+                // Устанавливаем размеры в ImageView
+                imageView.layoutParams.width = screenWidth
+                imageView.layoutParams.height = calculatedHeight
+                imageView.setImageDrawable(resource)
+            }
+
+            override fun onLoadCleared(placeholder: Drawable?) {
+                // Метод вызывается, когда изображение было очищено
+            }
+        })
+
 }

@@ -8,7 +8,7 @@ import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.repository.PostRepository.PostCallback
 import ru.netology.nmedia.util.SingleLiveEvent
-import java.lang.RuntimeException
+import kotlin.RuntimeException
 
 private val empty = Post(id = 0)
 
@@ -37,19 +37,19 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             override fun onSuccess(result: List<Post>) {
                 _data.postValue(FeedModel(posts = result, empty = result.isEmpty()))
             }
-            override fun onError(e: RuntimeException) {
-
-//                val first = e.message?.substringAfter("status")
-//                val second = first?.substring(2, endIndex = 5)
-//
-//                println(second)
-
+            override fun onError(e: Any) {
+               val toastText = when (e){
+                    is Int -> "Ошибка HTTP $e"
+                    else -> "Ошибка сети"
+                }
+                println(toastText)
                 Toast.makeText(
                     getApplication(),
-                    "Ошибка загрузки постов.",
+                    toastText,
                     Toast.LENGTH_SHORT
                 ).show()
-                _data.postValue(FeedModel(error = true))
+                    _data.postValue(FeedModel(error = true))
+
             }
         })
     }
@@ -62,9 +62,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     override fun onSuccess(result: Post) {
                         _postCreated.postValue(Unit)
                     }
-                    override fun onError(e: RuntimeException) {
+                    override fun onError(e: Any) {
                         toastServerError.show()
-   //                     _data.postValue(FeedModel(error = true))
                     }
                 }
                 )
@@ -83,8 +82,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         repository.removeByIdAsync(id, object : PostCallback<Unit> {
             override fun onSuccess(result: Unit) {
             }
-
-            override fun onError(e: RuntimeException) {
+            override fun onError(e: Any) {
                 toastServerError.show()
                 _data.postValue(_data.value?.copy(posts = old))
             }
@@ -102,7 +100,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 _data.postValue(_data.value?.copy(posts = updatedPosts))
             }
 
-            override fun onError(e: RuntimeException) {
+            override fun onError(e: Any) {
                 toastServerError.show()
             }
         })
