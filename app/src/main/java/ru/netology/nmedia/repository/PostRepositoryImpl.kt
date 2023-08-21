@@ -8,33 +8,18 @@ import ru.netology.nmedia.dto.Post
 import kotlin.RuntimeException
 
 class PostRepositoryImpl : PostRepository {
-
-//    override fun getAll(): List<Post> {
-//        return PostApi.service.getAll()
-//            .execute()
-//            .let {
-//                it.body() ?: throw RuntimeException("body is null")
-//  //              it.body() ?: throw RuntimeException(it.code())
-//            }
-//    }
-
     override fun getAllAsync(callback: PostRepository.PostCallback<List<Post>>) {
         PostApi.service.getAll()
             .enqueue(object : Callback<List<Post>> {
                 override fun onResponse(call: Call<List<Post>>, response: Response<List<Post>>) {
                     if (!response.isSuccessful) {
-                        if (response.code() != null) {
-                            callback.onError(response.code())
-                        } else {
-                            callback.onError(RuntimeException(response.errorBody()?.string()))
-                        }
+                        callback.onError(NumberResponseError(response.code()))
                         return
                     }
                     val body = (response.body() ?: run {
-                        callback.onError(RuntimeException("response is empty"))
+                        callback.onError(NumberResponseError(response.code()))
                     }) as List<Post>
                     callback.onSuccess(body)
-
                 }
 
                 override fun onFailure(call: Call<List<Post>>, t: Throwable) {
@@ -48,7 +33,7 @@ class PostRepositoryImpl : PostRepository {
             .enqueue(object : Callback<Post> {
                 override fun onResponse(call: Call<Post>, response: Response<Post>) {
                     if (!response.isSuccessful) {
-                        callback.onError(RuntimeException(response.errorBody()?.string()))
+                        callback.onError(NumberResponseError(response.code()))
                         return
                     }
                     val body = (response.body() ?: run {
@@ -60,8 +45,7 @@ class PostRepositoryImpl : PostRepository {
                 override fun onFailure(call: Call<Post>, t: Throwable) {
                     callback.onError(RuntimeException(t))
                 }
-            }
-            )
+            })
     }
 
     override fun removeByIdAsync(id: Long, callback: PostRepository.PostCallback<Unit>) {
@@ -70,7 +54,7 @@ class PostRepositoryImpl : PostRepository {
             .enqueue(object : Callback<Unit> {
                 override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
                     if (!response.isSuccessful) {
-                        callback.onError(RuntimeException(response.errorBody()?.string()))
+                        callback.onError(NumberResponseError(response.code()))
                         return
                     }
                     callback.onSuccess(Unit)
@@ -79,15 +63,14 @@ class PostRepositoryImpl : PostRepository {
                 override fun onFailure(call: Call<Unit>, t: Throwable) {
                     callback.onError(RuntimeException(t))
                 }
-            }
-            )
+            })
     }
 
     override fun likePostAsync(likedPost: Post, callback: PostRepository.PostCallback<Post>) {
         val callbackLikeOrDislike = object : Callback<Post> {
             override fun onResponse(call: Call<Post>, response: Response<Post>) {
                 if (!response.isSuccessful) {
-                    callback.onError(RuntimeException(response.errorBody()?.string()))
+                    callback.onError(NumberResponseError(response.code()))
                     return
                 }
                 val body = (response.body() ?: run {
@@ -109,6 +92,5 @@ class PostRepositoryImpl : PostRepository {
                     .enqueue(callbackLikeOrDislike)
             } else return
         }
-
     }
 }

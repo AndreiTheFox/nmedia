@@ -3,7 +3,6 @@ package ru.netology.nmedia.repository
 import ru.netology.nmedia.dto.Post
 
 interface PostRepository {
-  //  fun getAll(): List<Post>
     fun getAllAsync (callback : PostCallback<List<Post>>)
     fun saveAsync (post: Post, callback: PostCallback<Post>)
     fun removeByIdAsync(id: Long, callback: PostCallback<Unit>)
@@ -11,6 +10,8 @@ interface PostRepository {
 
     interface PostCallback<T>{
         fun onSuccess (result: T)
-        fun onError(e:Any)
+        fun onError(exception:Exception)
     }
 }
+
+class NumberResponseError(val code:Int) : Exception()

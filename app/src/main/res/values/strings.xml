@@ -30,4 +30,5 @@
     <string name="attachment">attachment</string>
     <string name="server_error">Server Error</string>
     <string name="appears_on_http_server_errors">Appears on Http Server Errors</string>
+    <string name="http_error">Http Error %1$s</string>
 </resources>

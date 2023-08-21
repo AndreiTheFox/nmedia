@@ -21,7 +21,7 @@ import ru.netology.nmedia.viewmodel.PostViewModel
 class FeedFragment : Fragment() {
     private val viewModel: PostViewModel by activityViewModels()
 
-    @SuppressLint("RestrictedApi")
+    @SuppressLint("RestrictedApi", "StringFormatInvalid", "StringFormatMatches")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,6 +33,7 @@ class FeedFragment : Fragment() {
             container,
             false
         )
+
         val adapter = PostsAdapter(object : OnInteractionListener {
             override fun onPostClick(post: Post) {
                 findNavController().navigate(
@@ -61,13 +62,16 @@ class FeedFragment : Fragment() {
             }
         })
         binding.list.adapter = adapter
+
         viewModel.data.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.posts)
             binding.errorGroup.isVisible = state.error
             binding.empty.isVisible = state.empty
             binding.progress.isVisible = state.loading
             binding.serverError.isVisible = state.serverError
+            binding.serverError.text = getString(R.string.http_error,viewModel.data.value?.codeResponse)
         }
+
         binding.retryButton.setOnClickListener {
             viewModel.loadPosts()
         }

@@ -83,15 +83,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_add_24" />
-    <ImageView
+    <TextView
         android:id="@+id/serverError"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/server_error"
         android:contentDescription="@string/appears_on_http_server_errors"
-        android:src = "@drawable/ic_error_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
 

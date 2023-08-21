@@ -31,4 +31,5 @@
     <string name="attachment">Вложение</string>
     <string name="server_error">Ошибка сервера</string>
     <string name="appears_on_http_server_errors">Появляется при ошибках Http на сервере</string>
+    <string name="http_error">Ошибка Http</string>
 </resources>
