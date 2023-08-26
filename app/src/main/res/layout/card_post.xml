@@ -119,6 +119,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:contentDescription="@string/attachment"
+    android:adjustViewBounds="true"
     app:srcCompat="@drawable/videoclip"
     app:layout_constraintTop_toBottomOf="@id/content"
     android:clickable="false"
