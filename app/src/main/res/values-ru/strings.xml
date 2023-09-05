@@ -32,4 +32,6 @@
     <string name="server_error">Ошибка сервера</string>
     <string name="appears_on_http_server_errors">Появляется при ошибках Http на сервере</string>
     <string name="http_error">Ошибка Http</string>
+	<string name="error_loading">Не удалось загрузить данные</string>
+	<string name="google_play_unavailable">Google Api Недоступно</string>
 </resources>

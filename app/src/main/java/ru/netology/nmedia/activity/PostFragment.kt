@@ -44,14 +44,14 @@ class PostFragment : Fragment() {
                 )
             }
 
-//            override fun onLike(post: Post) {
-//                viewModel.likePost(post)
-//            }
-//
-//            override fun onRemove(post: Post) {
-//                viewModel.removeById(post.id)
-//                findNavController().navigateUp()
-//            }
+            override fun onLike(post: Post) {
+                viewModel.likeById(post)
+            }
+
+            override fun onRemove(post: Post) {
+                viewModel.removeById(post.id)
+                findNavController().navigateUp()
+            }
 
 //            override fun onShare(post: Post) {
 //                val intent = Intent().apply {

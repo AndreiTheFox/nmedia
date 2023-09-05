@@ -1,105 +1,87 @@
 package ru.netology.nmedia.viewmodel
 
 import android.app.Application
-import android.widget.Toast
 import androidx.lifecycle.*
+import kotlinx.coroutines.launch
+import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModel
-import ru.netology.nmedia.repository.*
-import ru.netology.nmedia.repository.PostRepository.PostCallback
+import ru.netology.nmedia.model.FeedModelState
+import ru.netology.nmedia.repository.PostRepository
+import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.util.SingleLiveEvent
-import java.lang.Exception
-import kotlin.RuntimeException
 
 private val empty = Post(id = 0)
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: PostRepository = PostRepositoryImpl()
-    private val _data = MutableLiveData(FeedModel())
-    val data: LiveData<FeedModel>
-        get() = _data
+    private val repository: PostRepository =
+        PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
+    val data: LiveData<FeedModel> = repository.data.map(::FeedModel)
+
+   // private val _data = MutableLiveData(FeedModel())
+    private val _dataState = MutableLiveData<FeedModelState>()
+    val dataState: LiveData<FeedModelState>
+        get() = _dataState
 
     val edited = MutableLiveData(empty)
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
 
-    val toastServerError: Toast = Toast.makeText(
-    getApplication(),
-    "Ошибка сервера.\nПопробуй еще раз.",
-    Toast.LENGTH_SHORT
-    )
-
     init {
         loadPosts()
     }
-
-    fun loadPosts() {
-        _data.postValue(FeedModel(loading = true))
-        repository.getAllAsync(object : PostCallback<List<Post>> {
-            override fun onSuccess(result: List<Post>) {
-                _data.postValue(FeedModel(posts = result, empty = result.isEmpty()))
-            }
-            override fun onError(exception: Exception) {
-                if (exception is NumberResponseError) {
-                    _data.postValue(FeedModel(codeResponse = exception.code, posts = _data.value?.posts.orEmpty(), serverError = true, error = true))
-                } else {
-                    _data.value = FeedModel(error = true)
-                }
-            }
-        })
+    fun removeById(id: Long) = viewModelScope.launch {
+        try {
+            _dataState.value = FeedModelState(refreshing = true)
+            repository.removeById(id)
+            _dataState.value = FeedModelState()
+        } catch (e: Exception) {
+            _dataState.value = FeedModelState(error = true)
+        }
     }
-
-    fun save() {
-        val editPost = edited.value
-        if (editPost != null) {
-            edited.value?.let {
-                repository.saveAsync(editPost, object : PostCallback<Post> {
-                    override fun onSuccess(result: Post) {
-                        _postCreated.postValue(Unit)
-                    }
-                    override fun onError(exception: Exception) {
-                        toastServerError.show()
-                    }
-                }
-                )
-            }
-            edited.value = empty
+    fun likeById(post: Post)  = viewModelScope.launch {
+        try {
+            _dataState.value = FeedModelState(refreshing = true)
+            repository.likePost(post)
+            _dataState.value = FeedModelState()
+        } catch (e: Exception) {
+            _dataState.value = FeedModelState(error = true)
+        }
+    }
+    fun loadPosts() = viewModelScope.launch {
+        try {
+            _dataState.value = FeedModelState(loading = true)
+            repository.getAll()
+            _dataState.value = FeedModelState()
+        } catch (e: Exception) {
+            _dataState.value = FeedModelState(error = true)
         }
     }
 
-    fun removeByIdAsync(id: Long) {
-        val old = getScreenPosts()
-        _data.postValue(
-            _data.value?.copy(posts = getScreenPosts()
-                .filter { it.id != id }
-            )
-        )
-        repository.removeByIdAsync(id, object : PostCallback<Unit> {
-            override fun onSuccess(result: Unit) {
-            }
-            override fun onError(exception: Exception) {
-                toastServerError.show()
-                _data.postValue(_data.value?.copy(posts = old))
-            }
-        })
+    fun refreshPosts() = viewModelScope.launch {
+        try {
+            _dataState.value = FeedModelState(refreshing = true)
+            repository.getAll()
+            _dataState.value = FeedModelState()
+        } catch (e: Exception) {
+            _dataState.value = FeedModelState(error = true)
+        }
     }
 
-    fun likePostAsync(likedPost: Post) {
-        repository.likePostAsync(likedPost, object : PostCallback<Post> {
-            override fun onSuccess(result: Post) {
-                val updatedPosts = _data.value?.posts?.map {
-                    if (it.id == result.id) {
-                        result
-                    } else it
-                }.orEmpty()
-                _data.postValue(_data.value?.copy(posts = updatedPosts))
+    fun save() {
+        edited.value?.let {
+            _postCreated.value = Unit
+            viewModelScope.launch {
+                try {
+                    repository.save(it)
+                    _dataState.value = FeedModelState()
+                } catch (e: Exception) {
+                    _dataState.value = FeedModelState(error = true)
+                }
             }
-
-            override fun onError(exception: Exception) {
-                toastServerError.show()
-            }
-        })
+        }
+        edited.value = empty
     }
 
     fun edit(post: Post) {
@@ -114,8 +96,41 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         edited.value = edited.value?.copy(content = text)
     }
 
-    private fun getScreenPosts(): List<Post> {
-        return _data.value?.posts
-            ?: throw RuntimeException("List of posts is NULL - something missing")
-    }
+
+
+
+
+//    fun removeByIdAsync(id: Long) {
+//        val old = getScreenPosts()
+//        _data.postValue(
+//            _data.value?.copy(posts = getScreenPosts()
+//                .filter { it.id != id }
+//            )
+//        )
+//        repository.removeByIdAsync(id, object : PostCallback<Unit> {
+//            override fun onSuccess(result: Unit) {
+//            }
+//            override fun onError(exception: Exception) {
+//                toastServerError.show()
+//                _data.postValue(_data.value?.copy(posts = old))
+//            }
+//        })
+//    }
+//
+//    fun likePostAsync(likedPost: Post) {
+//        repository.likePostAsync(likedPost, object : PostCallback<Post> {
+//            override fun onSuccess(result: Post) {
+//                val updatedPosts = _data.value?.posts?.map {
+//                    if (it.id == result.id) {
+//                        result
+//                    } else it
+//                }.orEmpty()
+//                _data.postValue(_data.value?.copy(posts = updatedPosts))
+//            }
+//
+//            override fun onError(exception: Exception) {
+//                toastServerError.show()
+//            }
+//        })
+//    }
 }

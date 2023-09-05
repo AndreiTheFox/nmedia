@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Nmedia</string>
     <string name="app_text">NmediaAppTextReallyLongText</string>
-    <string name="post_avatar">Post_avatar</string>
+    <string name="post_avatar">Post avatar</string>
     <string name="likes_button">Likes Button</string>
     <string name="share_post_button">Share Post Button</string>
     <string name="views_button">Views Button</string>
@@ -31,4 +31,6 @@
     <string name="server_error">Server Error</string>
     <string name="appears_on_http_server_errors">Appears on Http Server Errors</string>
     <string name="http_error">Http Error %1$s</string>
+	<string name="error_loading">Error loading data</string>
+	<string name="google_play_unavailable">Google Api Unavailable</string>
 </resources>
