@@ -23,7 +23,11 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
         .map(List<PostEntity>::toDto)
         .flowOn(Dispatchers.Default)
 
-    override fun getNeverCount(id: Long): Flow<Int> = flow {
+    override suspend fun updateFeed(){
+        dao.updateFeed()
+    }
+
+    override fun getNewPostsCount(id: Long): Flow<Int> = flow {
         while (true) {
             delay(10_000L)
             val response = PostsApi.service.getNewer(id)
@@ -31,10 +35,13 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
                 throw ApiError(response.code(), response.message())
             }
             val body = response.body() ?: throw ApiError(response.code(), response.message())
-            dao.insert(body.toEntity())
-            emit(body.size)
+            dao.insert(body.toEntity()
+                .map{
+                    it.copy(hidden = true)
+                })
 
-
+            val newPostsCount = dao.countUnread()
+            emit(newPostsCount)
         }
     }
         .catch { e-> throw AppError.from(e) }

@@ -47,12 +47,26 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:contentDescription="@string/add_post"
-            android:layout_gravity="bottom|end"
-            app:srcCompat="@drawable/ic_add_24" />
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/loadNewPosts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/darkSlateGreen"
+        android:visibility="gone"
+        android:contentDescription="@string/new_posts"
+        android:text="Unread posts"
+        android:clickable="true"
+        app:icon="@drawable/ic_refresh_24" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/add_post"
+        app:srcCompat="@drawable/ic_add_24" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -3,7 +3,6 @@ package ru.netology.nmedia.viewmodel
 import android.app.Application
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.db.AppDb
@@ -22,16 +21,17 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     val data: LiveData<FeedModel> = repository.data
         .map(::FeedModel)
-        .catch { e ->
-            //TODO
-            e.printStackTrace()
-        }
         .asLiveData(Dispatchers.Default)
 
-    val newerCount: LiveData<Int> = data.switchMap {
-        repository.getNeverCount(it.posts.firstOrNull()?.id ?:0L)
+    val newPostsCount: LiveData<Int> = data.switchMap {
+        repository.getNewPostsCount(it.posts.firstOrNull()?.id ?: 0L)
             .asLiveData(Dispatchers.Default)
     }
+
+    fun updateFeed() = viewModelScope.launch {
+        repository.updateFeed()
+    }
+
 
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>
@@ -42,9 +42,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val postCreated: LiveData<Unit>
         get() = _postCreated
 
-    init {
-        loadPosts()
-    }
+//    init {
+//        loadPosts()
+//    }
 
     fun removeById(id: Long) = viewModelScope.launch {
         try {
@@ -76,15 +76,15 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun refreshPosts() = viewModelScope.launch {
-        try {
-            _dataState.value = FeedModelState(refreshing = true)
-            repository.getAll()
-            _dataState.value = FeedModelState()
-        } catch (e: Exception) {
-            _dataState.value = FeedModelState(error = true)
-        }
-    }
+//    fun refreshPosts() = viewModelScope.launch {
+//        try {
+//            _dataState.value = FeedModelState(refreshing = true)
+//            repository.getAll()
+//            _dataState.value = FeedModelState()
+//        } catch (e: Exception) {
+//            _dataState.value = FeedModelState(error = true)
+//        }
+//    }
 
     fun save() {
         edited.value?.let {

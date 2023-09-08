@@ -11,6 +11,7 @@ data class Post(
     val sharedByMe: Boolean = false,
     val shares: Int = 0,
     val views: Int = 0,
+    val hidden: Boolean = false,
     //val attachment: Attachment? = null
 )
 //data class Attachment(

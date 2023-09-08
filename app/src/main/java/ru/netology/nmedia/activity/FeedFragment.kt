@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
@@ -86,15 +87,42 @@ class FeedFragment : Fragment() {
                     .show()
             }
         }
+
         viewModel.data.observe(viewLifecycleOwner) { state ->
             adapter.submitList(state.posts)
             binding.emptyText.isVisible = state.empty
         }
 
         binding.fab.setOnClickListener { findNavController().navigate(R.id.action_feedFragment_to_newPostFragment) }
+
         binding.swiperefresh.setOnRefreshListener {
             viewModel.loadPosts()
             binding.swiperefresh.isRefreshing = false
+        }
+
+        viewModel.newPostsCount.observe(viewLifecycleOwner){
+            if (it>0){
+                binding.loadNewPosts.visibility = View.VISIBLE
+                binding.loadNewPosts.text = "Свежие посты: $it"
+            }
+            else {
+                binding.loadNewPosts.visibility = View.GONE
+            }
+        }
+
+        //Плавное прокручивание ленты постов при добавлении свежих загруженных постов в holder адаптера после нажатия пользователя
+        adapter.registerAdapterDataObserver(object: AdapterDataObserver(){
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                if (positionStart==0){
+                    binding.list.smoothScrollToPosition(0)
+                }
+            }
+        })
+
+        //Загрузить свежие посты
+        binding.loadNewPosts.setOnClickListener {
+            viewModel.updateFeed()
+            binding.loadNewPosts.visibility = View.GONE
         }
 
         return binding.root

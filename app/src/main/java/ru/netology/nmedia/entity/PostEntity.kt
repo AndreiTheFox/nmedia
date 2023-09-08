@@ -17,12 +17,13 @@ data class PostEntity(
     val sharedByMe: Boolean,
     val shares: Int = 0,
     val views: Int = 0,
+    val hidden: Boolean = false,
 ) {
-    fun toDto() = Post(id, author, authorAvatar, content, published, likedByMe, likes, sharedByMe, shares, views )
+    fun toDto() = Post(id, author, authorAvatar, content, published, likedByMe, likes, sharedByMe, shares, views, hidden )
 
     companion object {
         fun fromDto(dto: Post) =
-            PostEntity(dto.id, dto.author, dto.authorAvatar, dto.content, dto.published, dto.likedByMe, dto.likes, dto.sharedByMe, dto.shares, dto.views)
+            PostEntity(dto.id, dto.author, dto.authorAvatar, dto.content, dto.published, dto.likedByMe, dto.likes, dto.sharedByMe, dto.shares, dto.views, dto.hidden)
     }
 }
 fun List<PostEntity>.toDto(): List<Post> = map(PostEntity::toDto)
