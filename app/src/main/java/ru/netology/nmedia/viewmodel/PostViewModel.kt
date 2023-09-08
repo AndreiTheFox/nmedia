@@ -2,6 +2,9 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Post
@@ -16,9 +19,20 @@ private val empty = Post(id = 0)
 class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepository =
         PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
-    val data: LiveData<FeedModel> = repository.data.map(::FeedModel)
 
-   // private val _data = MutableLiveData(FeedModel())
+    val data: LiveData<FeedModel> = repository.data
+        .map(::FeedModel)
+        .catch { e ->
+            //TODO
+            e.printStackTrace()
+        }
+        .asLiveData(Dispatchers.Default)
+
+    val newerCount: LiveData<Int> = data.switchMap {
+        repository.getNeverCount(it.posts.firstOrNull()?.id ?:0L)
+            .asLiveData(Dispatchers.Default)
+    }
+
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>
         get() = _dataState
@@ -31,6 +45,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     init {
         loadPosts()
     }
+
     fun removeById(id: Long) = viewModelScope.launch {
         try {
             _dataState.value = FeedModelState(refreshing = true)
@@ -40,15 +55,17 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             _dataState.value = FeedModelState(error = true)
         }
     }
-    fun likeById(post: Post)  = viewModelScope.launch {
+
+    fun likeById(post: Post) = viewModelScope.launch {
         try {
-            _dataState.value = FeedModelState(refreshing = true)
+            //   _dataState.value = FeedModelState(refreshing = true)
             repository.likePost(post)
             _dataState.value = FeedModelState()
         } catch (e: Exception) {
             _dataState.value = FeedModelState(error = true)
         }
     }
+
     fun loadPosts() = viewModelScope.launch {
         try {
             _dataState.value = FeedModelState(loading = true)
@@ -95,42 +112,4 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
         edited.value = edited.value?.copy(content = text)
     }
-
-
-
-
-
-//    fun removeByIdAsync(id: Long) {
-//        val old = getScreenPosts()
-//        _data.postValue(
-//            _data.value?.copy(posts = getScreenPosts()
-//                .filter { it.id != id }
-//            )
-//        )
-//        repository.removeByIdAsync(id, object : PostCallback<Unit> {
-//            override fun onSuccess(result: Unit) {
-//            }
-//            override fun onError(exception: Exception) {
-//                toastServerError.show()
-//                _data.postValue(_data.value?.copy(posts = old))
-//            }
-//        })
-//    }
-//
-//    fun likePostAsync(likedPost: Post) {
-//        repository.likePostAsync(likedPost, object : PostCallback<Post> {
-//            override fun onSuccess(result: Post) {
-//                val updatedPosts = _data.value?.posts?.map {
-//                    if (it.id == result.id) {
-//                        result
-//                    } else it
-//                }.orEmpty()
-//                _data.postValue(_data.value?.copy(posts = updatedPosts))
-//            }
-//
-//            override fun onError(exception: Exception) {
-//                toastServerError.show()
-//            }
-//        })
-//    }
 }
