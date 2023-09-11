@@ -56,7 +56,7 @@
         android:backgroundTint="@color/darkSlateGreen"
         android:visibility="gone"
         android:contentDescription="@string/new_posts"
-        android:text="Unread posts"
+        android:text="@string/new_posts"
         android:clickable="true"
         app:icon="@drawable/ic_refresh_24" />
 

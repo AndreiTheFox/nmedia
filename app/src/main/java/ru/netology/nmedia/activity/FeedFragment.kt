@@ -103,7 +103,8 @@ class FeedFragment : Fragment() {
         viewModel.newPostsCount.observe(viewLifecycleOwner){
             if (it>0){
                 binding.loadNewPosts.visibility = View.VISIBLE
-                binding.loadNewPosts.text = "Свежие посты: $it"
+                val buttonText = getString(R.string.new_posts)
+                binding.loadNewPosts.text = "$buttonText $it"
             }
             else {
                 binding.loadNewPosts.visibility = View.GONE
