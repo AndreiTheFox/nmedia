@@ -47,6 +47,24 @@ class FeedFragment : Fragment() {
                     }
                 )
             }
+//            override fun onPostClick(post: Post) {
+//                findNavController().navigate(
+//                    R.id.action_feedFragment_to_postFragment,
+//                    Bundle().apply {
+//                        putLong("postId", post.id)
+//                    }
+//                )
+//            }
+
+            override fun onImageClick(post: Post) {
+                findNavController().navigate(
+                   // R.id.action_feedFragment_to_postFragment,
+                    R.id.action_feedFragment_to_imageFragment,
+                    Bundle().apply {
+                        putString("attachUrl",post.attachment?.url)
+                    }
+                )
+            }
 
             override fun onLike(post: Post) {
                 viewModel.likeById(post)
@@ -66,16 +84,8 @@ class FeedFragment : Fragment() {
                     Intent.createChooser(intent, getString(R.string.chooser_share_post))
                 startActivity(shareIntent)
             }
-
-            override fun onPostClick(post: Post) {
-                findNavController().navigate(
-                    R.id.action_feedFragment_to_postFragment,
-                    Bundle().apply {
-                        putLong("postId", post.id)
-                    }
-                )
-            }
         })
+
         binding.list.adapter = adapter
 
         viewModel.dataState.observe(viewLifecycleOwner) { state ->
@@ -103,8 +113,8 @@ class FeedFragment : Fragment() {
         viewModel.newPostsCount.observe(viewLifecycleOwner){
             if (it>0){
                 binding.loadNewPosts.visibility = View.VISIBLE
-                val buttonText = getString(R.string.new_posts)
-                binding.loadNewPosts.text = "$buttonText $it"
+                val buttonText = getString(R.string.new_posts) + "$it"
+                binding.loadNewPosts.text = buttonText
             }
             else {
                 binding.loadNewPosts.visibility = View.GONE
@@ -123,10 +133,12 @@ class FeedFragment : Fragment() {
         //Загрузить свежие посты
         binding.loadNewPosts.setOnClickListener {
             viewModel.updateFeed()
+            binding.loadNewPosts.animate()
+//                .scaleX(0F)
+//                .scaleY(0F)
+//                .alpha(0F)
             binding.loadNewPosts.visibility = View.GONE
         }
-
         return binding.root
     }
 }//Конец Main
-

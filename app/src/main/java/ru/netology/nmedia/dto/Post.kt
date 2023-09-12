@@ -12,11 +12,16 @@ data class Post(
     val shares: Int = 0,
     val views: Int = 0,
     val hidden: Boolean = false,
-    //val attachment: Attachment? = null
+    val attachment: Attachment? = null
 )
-//data class Attachment(
-//    val url: String = "",
-//    val type: String = ""
-//){
+data class Attachment(
+    val url: String = "",
+    val type:AttachmentType,
+)
+//{
 //    val description : String = ""
 //}
+
+enum class AttachmentType{
+    IMAGE
+}

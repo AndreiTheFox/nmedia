@@ -35,4 +35,8 @@
 	<string name="error_loading">Не удалось загрузить данные</string>
 	<string name="google_play_unavailable">Google Api Недоступно</string>
     <string name="new_posts">Новые посты:</string>
+    <string name="select_photo">Выбрать из галереи</string>
+    <string name="take_photo">Сфотографировать</string>
+    <string name="photo_attachment">Фото вложение</string>
+    <string name="back">Назад</string>
 </resources>

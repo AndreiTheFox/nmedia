@@ -40,20 +40,3 @@ interface PostDao {
     )
     suspend fun likeById(id: Long)
 }
-//    @Query("UPDATE PostEntity SET content = :content WHERE id = :id")
-//    fun updateContentByUd(id: Long, content: String)
-
-//    fun save(post: PostEntity) =
-//        if (post.id == 0L) insert(post) else updateContentByUd(post.id, post.content)
-
-
-//    @Query("DELETE FROM PostEntity WHERE id = :id")
-//    fun removeById(id: Long)
-//    @Query ("""
-//                UPDATE PostEntity SET
-//                shares = shares +1,
-//                sharedByMe = 1
-//                WHERE id = :id;
-//            """
-//            )
-//    fun sharePost(id: Long)

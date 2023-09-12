@@ -53,13 +53,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|center"
         android:layout_margin="16dp"
-        android:backgroundTint="@color/darkSlateGreen"
-        android:visibility="gone"
-        android:contentDescription="@string/new_posts"
-        android:text="@string/new_posts"
+        android:backgroundTint="@color/cardview_shadow_start_color"
         android:clickable="true"
+        android:contentDescription="@string/new_posts"
+        android:stateListAnimator="@animator/jelly_animator"
+        android:text="@string/new_posts"
+        android:visibility="gone"
         app:icon="@drawable/ic_refresh_24" />
-
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

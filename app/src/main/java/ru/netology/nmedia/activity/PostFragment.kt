@@ -31,7 +31,6 @@ class PostFragment : Fragment() {
         )
 
         val postId = arguments?.getLong("postId")
- //       val openedPost = viewModel.data.value?.find { it.id == postId }
 
         val adapter = PostViewHolder(binding.post, object : OnInteractionListener {
             override fun onEdit(post: Post) {
@@ -40,6 +39,7 @@ class PostFragment : Fragment() {
                     R.id.action_postFragment_to_newPostFragment,
                     Bundle().apply {
                         textArg = post.content
+
                     }
                 )
             }

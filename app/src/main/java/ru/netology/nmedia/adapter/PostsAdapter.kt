@@ -12,6 +12,7 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.util.counterWrite
+import ru.netology.nmedia.util.glideDownloadFullImage
 import ru.netology.nmedia.util.glideDownloadRoundImage
 
 interface OnInteractionListener {
@@ -19,7 +20,7 @@ interface OnInteractionListener {
     fun onShare(post: Post) {}
     fun onRemove(post: Post) {}
     fun onEdit(post: Post) {}
-
+    fun onImageClick (post: Post) {}
     //    fun onVideoClick(post: Post) {}
     fun onPostClick(post: Post) {}
 }
@@ -44,18 +45,18 @@ class PostViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
     private val serverPathUrl = "${BuildConfig.BASE_URL}"
     private val avatarsPathUrl = "${serverPathUrl}/avatars"
-    private val attachmentsUrl = "${serverPathUrl}/images"
+    private val attachmentsUrl = "${serverPathUrl}/media"
     fun bind(post: Post) {
         binding.apply {
             val downloadAvatarUrl = "${avatarsPathUrl}/${post.authorAvatar}"
-//            if (post.attachment != null) {
-//                val downloadAttachUrl = "${attachmentsUrl}/${post.attachment.url}"
-//                glideDownloadFullImage(downloadAttachUrl, binding.attachment)
-//                binding.attachment.visibility = View.VISIBLE }
-//            else {
-//                binding.attachment.visibility = View.GONE
-//            }
-            binding.attachment.visibility = View.GONE
+            if (post.attachment != null) {
+                val downloadAttachUrl = "${attachmentsUrl}/${post.attachment.url}"
+                glideDownloadFullImage(downloadAttachUrl, binding.attachment)
+                binding.attachment.visibility = View.VISIBLE }
+            else {
+                binding.attachment.visibility = View.GONE
+            }
+           // binding.attachment.visibility = View.GONE
             glideDownloadRoundImage(downloadAvatarUrl,binding.avatar)
             author.text = post.author
             published.text = post.published
@@ -94,9 +95,13 @@ class PostViewHolder(
             sharePostButton.setOnClickListener {
                 onInteractionListener.onShare(post)
             }
-            root.setOnClickListener {
-                onInteractionListener.onPostClick(post)
+//            root.setOnClickListener {
+//                onInteractionListener.onPostClick(post)
+//            }
+            attachment.setOnClickListener{
+                onInteractionListener.onImageClick(post)
             }
+
         }
     }
 }
