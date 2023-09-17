@@ -114,7 +114,17 @@ class FeedFragment : Fragment() {
             binding.emptyText.isVisible = state.empty
         }
 
-        binding.fab.setOnClickListener { findNavController().navigate(R.id.action_feedFragment_to_newPostFragment) }
+        binding.fab.setOnClickListener {
+            authViewModel.state.observe(viewLifecycleOwner) {
+                if (authViewModel.authorized) {
+                    findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+                }
+                else{
+                    findNavController().navigate(R.id.action_feedFragment_to_loginFragment)
+                }
+
+            }
+        }
 
         binding.swiperefresh.setOnRefreshListener {
             viewModel.loadPosts()
