@@ -4,8 +4,10 @@ import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.dto.Post
@@ -23,9 +25,18 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepository =
         PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
 
-    val data: LiveData<FeedModel> = repository.data
-        .map(::FeedModel)
-        .asLiveData(Dispatchers.Default)
+    val data: LiveData<FeedModel> = AppAuth.getINstance().authFlow.flatMapLatest { token ->
+
+        repository.data
+            .map { posts ->
+                FeedModel(
+                    posts.map {
+                        it.copy(ownedByMe = it.authorId == token?.id)
+                    },
+                    posts.isEmpty()
+                )
+            }
+    }.asLiveData(Dispatchers.Default)
 
     val newPostsCount: LiveData<Int> = data.switchMap {
         repository.getNewPostsCount(it.posts.firstOrNull()?.id ?: 0L)
@@ -61,7 +72,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun clearPhoto() {
-    _photo.value = PhotoModel()
+        _photo.value = PhotoModel()
     }
 
     fun removeById(id: Long) = viewModelScope.launch {
@@ -94,11 +105,11 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun save() {
-        edited.value?.let {post->
+        edited.value?.let { post ->
             viewModelScope.launch {
                 try {
                     photo.value?.file?.let {
-                        repository.saveWithAttachment(post, MediaUpload(it) )
+                        repository.saveWithAttachment(post, MediaUpload(it))
                     } ?: repository.save(post)
                     _postCreated.value = Unit
                     edited.value = empty

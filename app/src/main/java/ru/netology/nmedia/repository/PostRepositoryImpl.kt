@@ -51,9 +51,11 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
                 upload.file.asRequestBody()
             )
             val response = PostsApi.service.upload(media)
+
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
+
             return response.body() ?: throw ApiError(response.code(), response.message())
         } catch (e: java.io.IOException) {
             throw NetworkError
