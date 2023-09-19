@@ -52,4 +52,6 @@
     <string name="noLoginData">Пользователь или пароль пусты</string>
     <string name="logoutConfirm">Выйти из системы?</string>
     <string name="cancel">Отмена</string>
+    <string name="user_not_found">Пользователь не найден</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
 </resources>

@@ -11,26 +11,43 @@ import ru.netology.nmedia.dto.Token
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
-import ru.netology.nmedia.model.FeedModelState
+import ru.netology.nmedia.model.LoginState
 import java.io.IOException
+import java.net.HttpURLConnection
 
 class LoginViewModel : ViewModel() {
     //Feed state: loading, error, refreshing
-    private val _dataState = MutableLiveData<FeedModelState>()
-    val dataState: LiveData<FeedModelState>
+    private val _dataState = MutableLiveData<LoginState>()
+    val dataState: LiveData<LoginState>
         get() = _dataState
 
     //Managing response from server after auth try
     fun tryLogin(username: String, password: String) {
-    viewModelScope.launch{
-        try {
-            val result = login(username, password)
-            AppAuth.getINstance().setAuth(result)
+        viewModelScope.launch {
+            try {
+                //    _dataState.value = LoginState(loading = true)
+                val result = login(username, password)
+                AppAuth.getINstance().setAuth(result)
 
-        } catch (e: Exception) {
-            _dataState.value = FeedModelState(error = true)
+            } catch (e: ApiError) {
+                _dataState.value = when (e.status) {
+                    HttpURLConnection.HTTP_NOT_FOUND -> {
+                        LoginState(userNotFoundError = true)
+                    }
+
+                    HttpURLConnection.HTTP_BAD_REQUEST -> {
+                        LoginState(incorrectPasswordError = true)
+                    }
+
+                    else -> {
+                        LoginState(error = true)
+                    }
+                }
+            } catch (e: Exception) {
+                _dataState.value = LoginState(error = true)
+            }
         }
-    }
+
     }
 
     //Request to server for auth
@@ -49,9 +66,3 @@ class LoginViewModel : ViewModel() {
         }
     }
 }
-
-
-
-
-
-

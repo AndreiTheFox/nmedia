@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -33,21 +34,27 @@ class LoginFragment : Fragment() {
         binding.navBack.setOnClickListener {
             findNavController().navigateUp()
         }
-        binding.login.setOnClickListener {
-            val accountName = binding.username.text.toString()
-            val accountPassword = binding.password.text.toString()
-
-            if (accountName.isBlank() || accountPassword.isBlank()) {
-                AndroidUtils.hideKeyboard(requireView())
-                Snackbar.make(binding.root, R.string.noLoginData, Snackbar.LENGTH_LONG).show()
-                return@setOnClickListener
+        loginViewModel.dataState.observe(viewLifecycleOwner) { state->
+            when {
+                state.userNotFoundError || state.incorrectPasswordError -> Toast.makeText(context, R.string.user_not_found.toString(), Toast.LENGTH_LONG).show()
+                state.error -> Toast.makeText(context, R.string.unknown_error, Toast.LENGTH_LONG).show()
             }
 
-            loginViewModel.tryLogin(username = accountName, password = accountPassword)
-            authViewModel.state.observe(viewLifecycleOwner) {
-                if (authViewModel.authorized) {
-                    findNavController().navigateUp()
+        }
+        authViewModel.state.observe(viewLifecycleOwner) {
+            if (authViewModel.authorized) {
+                findNavController().navigateUp()
+            }
+
+            binding.login.setOnClickListener {
+                AndroidUtils.hideKeyboard(requireView())
+                val accountName = binding.username.text.toString()
+                val accountPassword = binding.password.text.toString()
+                if (accountName.isBlank() || accountPassword.isBlank()) {
+                    Snackbar.make(binding.root, R.string.noLoginData, Snackbar.LENGTH_LONG).show()
+                    return@setOnClickListener
                 }
+                loginViewModel.tryLogin(username = accountName, password = accountPassword)
             }
         }
 

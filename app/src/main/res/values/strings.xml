@@ -52,5 +52,6 @@
     <string name="login_failed">"Login failed"</string>
     <string name="logoutConfirm">"Logout confirm?"</string>
     <string name="cancel">"Cancel"</string>
-
+    <string name="user_not_found">"User Not Found"</string>
+    <string name="unknown_error">"Unknown Error"</string>
 </resources>
