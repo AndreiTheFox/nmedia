@@ -32,7 +32,8 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     override suspend fun saveWithAttachment(post: Post, upload: MediaUpload) {
         try {
             val media = upload(upload)
-            val postWithAttachment = post.copy(attachment = Attachment(media.id, AttachmentType.IMAGE))
+            val postWithAttachment =
+                post.copy(attachment = Attachment(media.id, AttachmentType.IMAGE))
             save(postWithAttachment)
         } catch (e: AppError) {
             throw e
@@ -50,7 +51,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
                 upload.file.name,
                 upload.file.asRequestBody()
             )
-            val response = PostsApi.service.upload(media)
+            val response = ApiNmedia.service.upload(media)
 
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
@@ -72,7 +73,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     override fun getNewPostsCount(id: Long): Flow<Int> = flow {
         while (true) {
             delay(10_000L)
-            val response = PostsApi.service.getNewer(id)
+            val response = ApiNmedia.service.getNewer(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -91,7 +92,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     override suspend fun getAll() {
         try {
-            val response = PostsApi.service.getAll()
+            val response = ApiNmedia.service.getAll()
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -106,7 +107,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     override suspend fun save(post: Post) {
         try {
-            val response = PostsApi.service.save(post)
+            val response = ApiNmedia.service.save(post)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -118,10 +119,11 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
             throw UnknownError
         }
     }
+
     override suspend fun removeById(id: Long) {
         dao.removeById(id)
         try {
-            val response = PostsApi.service.removeById(id)
+            val response = ApiNmedia.service.removeById(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
@@ -136,9 +138,9 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
         dao.likeById(post.id)
         try {
             val response = if (!post.likedByMe) {
-                PostsApi.service.likeById(post.id)
+                ApiNmedia.service.likeById(post.id)
             } else {
-                PostsApi.service.dislikeById(post.id)
+                ApiNmedia.service.dislikeById(post.id)
             }
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())

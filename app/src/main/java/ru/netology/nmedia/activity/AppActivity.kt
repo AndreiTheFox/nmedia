@@ -9,11 +9,15 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.MenuProvider
 import androidx.navigation.findNavController
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.messaging.FirebaseMessaging
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.databinding.ActivityAppBinding
@@ -21,6 +25,7 @@ import ru.netology.nmedia.dialogs.LogoutDialog
 import ru.netology.nmedia.viewmodel.AuthViewModel
 
 class AppActivity : AppCompatActivity() {
+    val authViewModel by viewModels<AuthViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestNotificationPermission()
@@ -50,10 +55,12 @@ class AppActivity : AppCompatActivity() {
                     }
                 )
         }
-        val authViewModel by viewModels<AuthViewModel>()
+        authViewModel.state.observe(this) {
+            invalidateOptionsMenu()
+        }
         var currentMenuProvider: MenuProvider? = null
         authViewModel.state.observe(this) {
-            currentMenuProvider?.let (::removeMenuProvider)
+            currentMenuProvider?.let(::removeMenuProvider)
 
             addMenuProvider(
                 object : MenuProvider {
@@ -70,16 +77,16 @@ class AppActivity : AppCompatActivity() {
                                     .navigate(
                                         R.id.action_feedFragment_to_loginFragment
                                     )
-//                                AppAuth.getINstance().setAuth(Token(5L, "x-token"))
                                 true
                             }
 
                             R.id.loguot -> {
-                            LogoutDialog().show(
-                                supportFragmentManager, LogoutDialog.TAG
-                            )
+                                LogoutDialog().show(
+                                    supportFragmentManager, LogoutDialog.TAG
+                                )
                                 true
                             }
+
                             R.id.register -> {
                                 true
                             }
@@ -88,12 +95,11 @@ class AppActivity : AppCompatActivity() {
                         }
 
                 }.also {
-                       currentMenuProvider = it
+                    currentMenuProvider = it
                 },
                 this
             )
         }
-
     }
 
     private fun requestNotificationPermission() {
@@ -106,5 +112,24 @@ class AppActivity : AppCompatActivity() {
         }
         requestPermissions(arrayOf(permission), 1)
     }
+    private fun checkGoogleApiAvailability() {
+        with(GoogleApiAvailability.getInstance()) {
+            val code = isGooglePlayServicesAvailable(this@AppActivity)
+            if (code == ConnectionResult.SUCCESS) {
+                return@with
+            }
+            if (isUserResolvableError(code)) {
+                getErrorDialog(this@AppActivity, code, 9000)?.show()
+                return
+            }
+            Toast.makeText(this@AppActivity, R.string.google_play_unavailable, Toast.LENGTH_LONG)
+                .show()
+        }
+
+        FirebaseMessaging.getInstance().token.addOnSuccessListener {
+            println(it)
+        }
+    }
 
 }
+

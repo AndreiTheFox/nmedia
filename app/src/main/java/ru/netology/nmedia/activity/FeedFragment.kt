@@ -1,7 +1,6 @@
 package ru.netology.nmedia.activity
 
 import android.content.Intent
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +25,6 @@ class FeedFragment : Fragment() {
     private val viewModel: PostViewModel by activityViewModels()
     val authViewModel by viewModels<AuthViewModel>()
 
-    @SuppressLint("RestrictedApi", "StringFormatInvalid", "StringFormatMatches")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -61,7 +59,6 @@ class FeedFragment : Fragment() {
 
             override fun onImageClick(post: Post) {
                 findNavController().navigate(
-                   // R.id.action_feedFragment_to_postFragment,
                     R.id.action_feedFragment_to_imageFragment,
                     Bundle().apply {
                         putString("attachUrl",post.attachment?.url)
@@ -132,7 +129,7 @@ class FeedFragment : Fragment() {
         }
 
         viewModel.newPostsCount.observe(viewLifecycleOwner){
-            if (it>0){
+            if (it>0) {
                 binding.loadNewPosts.visibility = View.VISIBLE
                 val buttonText = getString(R.string.new_posts) + "$it"
                 binding.loadNewPosts.text = buttonText
@@ -152,14 +149,12 @@ class FeedFragment : Fragment() {
         })
 
         //Загрузить свежие посты
+
         binding.loadNewPosts.setOnClickListener {
             viewModel.updateFeed()
-            binding.loadNewPosts.animate()
-//                .scaleX(0F)
-//                .scaleY(0F)
-//                .alpha(0F)
             binding.loadNewPosts.visibility = View.GONE
         }
+
         return binding.root
     }
 }//Конец Main

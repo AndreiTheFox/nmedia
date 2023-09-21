@@ -1,6 +1,7 @@
 package ru.netology.nmedia.service
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -15,6 +16,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.AppActivity
+import ru.netology.nmedia.auth.AppAuth
 import kotlin.random.Random
 
 class FCMService : FirebaseMessagingService() {
@@ -34,15 +36,59 @@ class FCMService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
+        val msgFromServer = Gson().fromJson(message.data["content"], RecivedMsg::class.java)
+        val reciever = msgFromServer.recipientId
+        val myCurrentId = AppAuth.getInstance().authStateFlow.value.id
+
+        when {
+            reciever == null -> handleNewNotification(msgFromServer)
+            reciever == myCurrentId -> handleNewNotification(msgFromServer)
+            reciever == 0L && reciever != myCurrentId -> AppAuth.getInstance().sendPushToken()
+            reciever != 0L && reciever != myCurrentId -> AppAuth.getInstance().sendPushToken()
+        }
+
         when (message.data["action"]) {
             "LIKE" -> handleLike(Gson().fromJson(message.data["content"], Like::class.java))
-            "NEW_MESSAGE"-> handleNewMessage(Gson().fromJson(message.data["content"], NewMessage::class.java))
-            "NEW_POST"->handleNewPost(Gson().fromJson(message.data["content"], NewPost::class.java))
+            "NEW_MESSAGE" -> handleNewMessage(
+                Gson().fromJson(
+                    message.data["content"],
+                    NewMessage::class.java
+                )
+            )
+
+            "NEW_POST" -> handleNewPost(
+                Gson().fromJson(
+                    message.data["content"],
+                    NewPost::class.java
+                )
+            )
+
             else -> return
         }
 
     }
+    @SuppressLint("StringFormatInvalid")
+    private fun handleNewNotification(msg : RecivedMsg) {
+        val notificationMessage = getString(R.string.new_notification) + " " + msg.content
 
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.ic_notification_icon)
+            .setContentTitle(
+                notificationMessage
+            )
+            .setContentIntent(getCurrentPendingIntent())
+            .setAutoCancel(true)
+            .build()
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            NotificationManagerCompat.from(this)
+                .notify(Random.nextInt(100_000), notification)
+        }
+    }
     private fun handleLike(like: Like) {
         val notificationMessage =
             getString(R.string.notification_user_liked, like.userName, like.postAuthor)
@@ -65,17 +111,23 @@ class FCMService : FirebaseMessagingService() {
         }
     }
 
-    private fun handleNewMessage (newMessage: NewMessage){
+    private fun handleNewMessage(newMessage: NewMessage) {
         val notificationMessage =
-            getString(R.string.notification_user_new_message, newMessage.senderName, newMessage.postContent)
+            getString(
+                R.string.notification_user_new_message,
+                newMessage.senderName,
+                newMessage.postContent
+            )
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_notification_icon)
-            .setContentTitle (newMessage.senderName)
+            .setContentTitle(newMessage.senderName)
             .setContentText(
                 notificationMessage
             )
-            .setStyle(NotificationCompat.BigTextStyle()
-                .bigText(notificationMessage))
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(notificationMessage)
+            )
             .setContentIntent(getCurrentPendingIntent())
             .setAutoCancel(true)
             .build()
@@ -88,17 +140,20 @@ class FCMService : FirebaseMessagingService() {
                 .notify(Random.nextInt(100_000), notification)
         }
     }
-    private fun handleNewPost (newPost: NewPost){
+
+    private fun handleNewPost(newPost: NewPost) {
         val notificationMessage =
             getString(R.string.notification_user_new_post, newPost.authorName, newPost.postContent)
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_notification_icon)
-            .setContentTitle (newPost.authorName)
+            .setContentTitle(newPost.authorName)
             .setContentText(
                 notificationMessage
             )
-            .setStyle(NotificationCompat.BigTextStyle()
-                .bigText(notificationMessage))
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(notificationMessage)
+            )
             .setContentIntent(getCurrentPendingIntent())
             .setAutoCancel(true)
             .build()
@@ -111,10 +166,12 @@ class FCMService : FirebaseMessagingService() {
                 .notify(Random.nextInt(100_000), notification)
         }
     }
+
     override fun onNewToken(token: String) {
-        println(token)
+        AppAuth.getInstance().sendPushToken(token)
     }
-    private fun getCurrentPendingIntent(): PendingIntent{
+
+    private fun getCurrentPendingIntent(): PendingIntent {
 
         val notifyPendingIntent = PendingIntent.getActivity(
             this, 0,
@@ -130,16 +187,23 @@ class FCMService : FirebaseMessagingService() {
         val postId: Long,
         val postAuthor: String,
     )
-    data class NewMessage (
+
+    data class NewMessage(
         val senderId: Long,
         val senderName: String,
         val postId: Long,
         val postContent: String,
-            )
-    data class NewPost (
+    )
+
+    data class NewPost(
         val authorId: Long,
         val authorName: String,
         val postId: Long,
         val postContent: String,
+    )
+
+    data class RecivedMsg(
+        val recipientId: Long?,
+        val content: String,
     )
 }

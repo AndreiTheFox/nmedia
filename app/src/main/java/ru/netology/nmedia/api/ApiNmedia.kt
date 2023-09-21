@@ -11,6 +11,7 @@ import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.dto.PushToken
 import ru.netology.nmedia.dto.Token
 
 private const val BASE_URL = "${BuildConfig.BASE_URL}/api/slow/"
@@ -22,14 +23,14 @@ private val logging = HttpLoggingInterceptor().apply {
 }
 private val okhttp = OkHttpClient.Builder()
     .addInterceptor(logging)
-    .addInterceptor { chain->
-        val request = AppAuth.getINstance().authFlow.value?.token?.let {
-            chain.request()
-                .newBuilder()
-                .addHeader("Authorization", it)
+    .addInterceptor { chain ->
+        AppAuth.getInstance().authStateFlow.value.token?.let { token ->
+            val newRequest = chain.request().newBuilder()
+                .addHeader("Authorization", token)
                 .build()
-        } ?: chain.request()
-        chain.proceed(request = request)
+            return@addInterceptor chain.proceed(newRequest)
+        }
+        chain.proceed(chain.request())
     }
     .build()
 private val retrofit = Retrofit.Builder()
@@ -37,7 +38,6 @@ private val retrofit = Retrofit.Builder()
     .baseUrl(BASE_URL)
     .client(okhttp)
     .build()
-
 interface PostsApiService {
     @GET("posts")
     suspend fun getAll(): Response<List<Post>>
@@ -58,7 +58,7 @@ interface PostsApiService {
     suspend fun dislikeById(@Path("id") id: Long): Response<Post>
 
     @GET("posts/{id}/newer")
-    suspend fun getNewer(@Path("id")id: Long): Response<List<Post>>
+    suspend fun getNewer(@Path("id") id: Long): Response<List<Post>>
     @Multipart
     @POST("media")
     suspend fun upload(@Part part: MultipartBody.Part): Response<Media>
@@ -66,9 +66,12 @@ interface PostsApiService {
     @FormUrlEncoded
     @POST("users/authentication")
     suspend fun updateUser(@Field("login") login: String, @Field("pass") pass: String): Response<Token>
+    @POST("users/push-tokens")
+    suspend fun savePushToken(@Body pushToken: PushToken): Response<Unit>
+
 }
 
-object PostsApi {
+object ApiNmedia {
     val service: PostsApiService by lazy {
         retrofit.create(PostsApiService::class.java)
     }

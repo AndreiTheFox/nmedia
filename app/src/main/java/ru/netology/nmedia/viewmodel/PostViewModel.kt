@@ -25,13 +25,13 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepository =
         PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
 
-    val data: LiveData<FeedModel> = AppAuth.getINstance().authFlow.flatMapLatest { token ->
+    val data: LiveData<FeedModel> = AppAuth.getInstance().authStateFlow.flatMapLatest { token ->
 
         repository.data
             .map { posts ->
                 FeedModel(
                     posts.map {
-                        it.copy(ownedByMe = it.authorId == token?.id)
+                        it.copy(ownedByMe = it.authorId == token.id)
                     },
                     posts.isEmpty()
                 )
@@ -45,6 +45,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun updateFeed() = viewModelScope.launch {
         repository.updateFeed()
+
     }
 
     //Feed state: loading, error, refreshing

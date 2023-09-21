@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import ru.netology.nmedia.api.PostsApi
+import ru.netology.nmedia.api.ApiNmedia
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.Token
 import ru.netology.nmedia.error.ApiError
@@ -25,9 +25,8 @@ class LoginViewModel : ViewModel() {
     fun tryLogin(username: String, password: String) {
         viewModelScope.launch {
             try {
-                //    _dataState.value = LoginState(loading = true)
                 val result = login(username, password)
-                AppAuth.getINstance().setAuth(result)
+                AppAuth.getInstance().setAuth(result.id, result.token)
 
             } catch (e: ApiError) {
                 _dataState.value = when (e.status) {
@@ -52,17 +51,19 @@ class LoginViewModel : ViewModel() {
 
     //Request to server for auth
     suspend fun login(username: String, password: String): Token {
-        try {
-            val response = PostsApi.service.updateUser(username, password)
-            if (!response.isSuccessful) {
-                throw ApiError(response.code(), response.message())
-            }
-            val token = response.body() ?: throw ApiError(response.code(), response.message())
-            return token
-        } catch (e: IOException) {
+
+        val response = try {
+            ApiNmedia.service.updateUser(username, password)
+        }
+        catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {
             throw UnknownError
         }
+        if (!response.isSuccessful) {
+            throw ApiError(response.code(), response.message())
+        }
+        return response.body() ?: throw ApiError(response.code(), response.message())
     }
 }
+

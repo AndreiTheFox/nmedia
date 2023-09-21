@@ -12,7 +12,7 @@ class LogoutDialog : DialogFragment() {
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.logoutConfirm)
             .setPositiveButton(R.string.logout) { dialog, _ ->
-                AppAuth.getINstance().clear()
+                AppAuth.getInstance().removeAuth()
                 dialog.cancel()
             }
             .setNegativeButton(R.string.cancel) { dialog, _ ->
@@ -24,21 +24,3 @@ class LogoutDialog : DialogFragment() {
         const val TAG = "LogoutConfirmationDialog"
     }
 }
-
-//        return activity?.let {
-//            // Use the Builder class for convenient dialog construction
-//            val builder = AlertDialog.Builder(it)
-//            builder.setMessage(R.string.logoutConfirm)
-//                .setPositiveButton(R.string.logout, DialogInterface.OnClickListener{
-//                        dialog, id ->
-//                    AppAuth.getINstance().clear()
-//                    dialog.cancel()
-//                })
-//                .setNegativeButton(R.string.cancel, DialogInterface.OnClickListener {
-//                        dialog, id ->
-//                    dialog.cancel()
-//                    //User cancelled
-//                })
-//            builder.setCancelable(true)
-//            builder.create()
-//        } ?: throw IllegalStateException("Activity cannot be null")

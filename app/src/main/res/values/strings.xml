@@ -40,7 +40,7 @@
     <string name="back">Back</string>
     <string name="logout">Logout</string>
     <string name="login">Login</string>
-    <string name="register">register</string>
+    <string name="register">Register</string>
     <string name="noLoginData">Username or password is empty</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -54,4 +54,5 @@
     <string name="cancel">"Cancel"</string>
     <string name="user_not_found">"User Not Found"</string>
     <string name="unknown_error">"Unknown Error"</string>
+    <string name="new_notification">"New Notification"</string>
 </resources>
