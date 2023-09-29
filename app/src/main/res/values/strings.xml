@@ -40,11 +40,13 @@
     <string name="back">Back</string>
     <string name="logout">Logout</string>
     <string name="login">Login</string>
+    <string name="name">Name</string>
     <string name="register">Register</string>
     <string name="noLoginData">Username or password is empty</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
+    <string name="repeat_password">Repeat Password</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="welcome">"Welcome!"</string>
     <string name="invalid_username">Not a valid username</string>
@@ -55,4 +57,6 @@
     <string name="user_not_found">"User Not Found"</string>
     <string name="unknown_error">"Unknown Error"</string>
     <string name="new_notification">"New Notification"</string>
+    <string name="user_already_exists">"User Already Exists"</string>
+    <string name="passwords_are_not_equal">"Password and password confirmation do not match"</string>
 </resources>

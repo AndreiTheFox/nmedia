@@ -55,4 +55,8 @@
     <string name="user_not_found">Пользователь не найден</string>
     <string name="unknown_error">Неизвестная ошибка</string>
     <string name="new_notification">Новое уведомление</string>
+    <string name="user_already_exists">Такой пользователь уже есть</string>
+    <string name="name">Имя</string>
+    <string name="repeat_password">Повторите пароль</string>
+    <string name="passwords_are_not_equal">Пароль и подтверждение пароля не совпадают</string>
 </resources>

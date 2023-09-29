@@ -9,48 +9,47 @@ import ru.netology.nmedia.api.ApiNmedia
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.Token
 import ru.netology.nmedia.error.*
-import ru.netology.nmedia.model.LoginState
+import ru.netology.nmedia.model.RegisterState
 import java.io.IOException
 import java.net.HttpURLConnection
 
-class LoginViewModel : ViewModel() {
-    private val _dataState = MutableLiveData<LoginState>()
-    val dataState: LiveData<LoginState>
+class RegisterViewModel : ViewModel() {
+    private val _dataState = MutableLiveData<RegisterState>()
+    val dataState: LiveData<RegisterState>
         get() = _dataState
 
     //Managing response from server after auth try
-    fun tryLogin(username: String, password: String) {
+    fun tryRegister(login: String, password: String, username: String) {
         viewModelScope.launch {
             try {
-                val result = login(username, password)
+                val result = register(login, password, username)
                 AppAuth.getInstance().setAuth(result.id, result.token)
 
             } catch (e: ApiError) {
                 _dataState.value = when (e.status) {
-                    HttpURLConnection.HTTP_NOT_FOUND -> {
-                        LoginState(userNotFoundError = true)
+                    HttpURLConnection.HTTP_CONFLICT -> {
+                        RegisterState(userAlreadyExists = true)
                     }
 
                     HttpURLConnection.HTTP_BAD_REQUEST -> {
-                        LoginState(incorrectPasswordError = true)
+                        RegisterState(error = true)
                     }
 
                     else -> {
-                        LoginState(error = true)
+                        RegisterState(error = true)
                     }
                 }
             } catch (e: Exception) {
-                _dataState.value = LoginState(error = true)
+                _dataState.value = RegisterState(error = true)
             }
         }
-
     }
 
     //Request to server for auth
-    private suspend fun login(username: String, password: String): Token {
+    private suspend fun register(login: String, password: String, username: String): Token {
 
         val response = try {
-            ApiNmedia.service.updateUser(username, password)
+            ApiNmedia.service.registerUser(login, password, username)
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {
@@ -65,4 +64,3 @@ class LoginViewModel : ViewModel() {
         )
     }
 }
-

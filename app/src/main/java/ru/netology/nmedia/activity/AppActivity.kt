@@ -88,6 +88,10 @@ class AppActivity : AppCompatActivity() {
                             }
 
                             R.id.register -> {
+                                findNavController(R.id.nav_graph)
+                                    .navigate(
+                                        R.id.action_feedFragment_to_registerFragment
+                                    )
                                 true
                             }
 
