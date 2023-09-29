@@ -87,7 +87,8 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
             emit(newPostsCount)
         }
     }
-        .catch { e -> throw AppError.from(e) }
+        .catch { e -> println (e) }
+//        .catch { e -> throw AppError.from(e) }
         .flowOn(Dispatchers.Default)
 
     override suspend fun getAll() {

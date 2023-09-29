@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
@@ -20,6 +20,7 @@ import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
+
 
 class FeedFragment : Fragment() {
     private val viewModel: PostViewModel by activityViewModels()
@@ -61,7 +62,7 @@ class FeedFragment : Fragment() {
                 findNavController().navigate(
                     R.id.action_feedFragment_to_imageFragment,
                     Bundle().apply {
-                        putString("attachUrl",post.attachment?.url)
+                        putString("attachUrl", post.attachment?.url)
                     }
                 )
             }
@@ -70,11 +71,10 @@ class FeedFragment : Fragment() {
                 authViewModel.state.observe(viewLifecycleOwner) {
                     if (authViewModel.authorized) {
                         viewModel.likeById(post)
-                    }
-                    else{
+                    } else {
                         findNavController().navigate(R.id.action_feedFragment_to_loginFragment)
                     }
-            }
+                }
             }
 
 
@@ -115,41 +115,39 @@ class FeedFragment : Fragment() {
             authViewModel.state.observe(viewLifecycleOwner) {
                 if (authViewModel.authorized) {
                     findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
-                }
-                else{
+                } else {
                     findNavController().navigate(R.id.action_feedFragment_to_loginFragment)
                 }
 
             }
         }
 
+
         binding.swiperefresh.setOnRefreshListener {
             viewModel.loadPosts()
             binding.swiperefresh.isRefreshing = false
         }
 
-        viewModel.newPostsCount.observe(viewLifecycleOwner){
-            if (it>0) {
+        viewModel.newPostsCount.observe(viewLifecycleOwner) {
+            if (it > 0) {
                 binding.loadNewPosts.visibility = View.VISIBLE
                 val buttonText = getString(R.string.new_posts) + "$it"
                 binding.loadNewPosts.text = buttonText
-            }
-            else {
+            } else {
                 binding.loadNewPosts.visibility = View.GONE
             }
         }
 
         //Плавное прокручивание ленты постов при добавлении свежих загруженных постов в holder адаптера после нажатия пользователя
-        adapter.registerAdapterDataObserver(object: AdapterDataObserver(){
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                if (positionStart==0){
+                if (positionStart == 0) {
                     binding.list.smoothScrollToPosition(0)
                 }
             }
         })
 
         //Загрузить свежие посты
-
         binding.loadNewPosts.setOnClickListener {
             viewModel.updateFeed()
             binding.loadNewPosts.visibility = View.GONE

@@ -50,7 +50,7 @@ class LoginViewModel : ViewModel() {
     }
 
     //Request to server for auth
-    suspend fun login(username: String, password: String): Token {
+    private suspend fun login(username: String, password: String): Token {
 
         val response = try {
             ApiNmedia.service.updateUser(username, password)

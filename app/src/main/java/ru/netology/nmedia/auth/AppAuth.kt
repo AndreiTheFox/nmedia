@@ -1,16 +1,12 @@
 package ru.netology.nmedia.auth
 
+import android.annotation.SuppressLint
 import android.content.Context
-import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import androidx.work.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import ru.netology.nmedia.api.ApiNmedia
-import ru.netology.nmedia.dto.PushToken
+import ru.netology.nmedia.wokrers.SendPushTokenWorker
 
-class AppAuth private constructor(context: Context) {
+class AppAuth private constructor(private val context: Context) {
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
     private val _authStateFlow: MutableStateFlow<AuthState>
     private val idKey = "id"
@@ -39,7 +35,7 @@ init {
     } else {
         _authStateFlow = MutableStateFlow(AuthState(id, token))
     }
-    sendPushToken()
+//    sendPushToken()
 }
     val authStateFlow: StateFlow<AuthState> = _authStateFlow.asStateFlow()
 
@@ -65,37 +61,38 @@ init {
     }
 
     fun sendPushToken(token: String? = null) {
-        CoroutineScope(Dispatchers.Default).launch {
-            try{
-                ApiNmedia.service.savePushToken(
-                    PushToken(
-                        token ?: FirebaseMessaging.getInstance().token.await()
+//        CoroutineScope(Dispatchers.Default).launch {
+//            try{
+//                ApiNmedia.service.savePushToken(
+//                    PushToken(
+//                        token ?: FirebaseMessaging.getInstance().token.await()
+//                    )
+//                )
+//            } catch (e: Exception){
+//                e.printStackTrace()
+//            }
+//        }
+        WorkManager.getInstance(context)
+            .enqueueUniqueWork(
+                SendPushTokenWorker.NAME,
+                ExistingWorkPolicy.REPLACE,
+                OneTimeWorkRequestBuilder<SendPushTokenWorker>()
+                    .setConstraints(
+                        Constraints.Builder()
+                            .setRequiredNetworkType(NetworkType.CONNECTED)
+                            .build()
                     )
-                )
-            } catch (e: Exception){
-                e.printStackTrace()
-            }
-        }
-//        WorkManager.getInstance(context)
-//            .enqueueUniqueWork(
-//                SendPushTokenWorker.NAME,
-//                ExistingWorkPolicy.REPLACE,
-//                OneTimeWorkRequestBuilder<SendPushTokenWorker>()
-//                    .setConstraints(
-//                        Constraints.Builder()
-//                            .setRequiredNetworkType(NetworkType.CONNECTED)
-//                            .build()
-//                    )
-//                    .setInputData(
-//                        Data.Builder()
-//                            .putString(SendPushTokenWorker.TOKEN_KEY, token)
-//                            .build()
-//                    )
-//                    .build()
-//            )
+                    .setInputData(
+                        Data.Builder()
+                            .putString(SendPushTokenWorker.TOKEN_KEY, token)
+                            .build()
+                    )
+                    .build()
+            )
     }
 
     companion object {
+        @SuppressLint("StaticFieldLeak")
         @Volatile
         private var instance: AppAuth? = null
 
@@ -106,7 +103,7 @@ init {
         }
 
         fun initApp(context: Context): AppAuth = instance ?: synchronized(this) {
-            instance ?: buildAuth(context).also { instance = it }
+            instance ?: buildAuth(context.applicationContext).also { instance = it }
         }
 
         private fun buildAuth(context: Context): AppAuth = AppAuth(context)

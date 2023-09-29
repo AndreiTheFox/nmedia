@@ -22,6 +22,7 @@ import kotlin.random.Random
 class FCMService : FirebaseMessagingService() {
     private val channelId: String = "Nmedia Notifications"
 
+    @SuppressLint("ObsoleteSdkInt")
     override fun onCreate() {
         super.onCreate()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -173,12 +174,11 @@ class FCMService : FirebaseMessagingService() {
 
     private fun getCurrentPendingIntent(): PendingIntent {
 
-        val notifyPendingIntent = PendingIntent.getActivity(
+        return PendingIntent.getActivity(
             this, 0,
             Intent(this, AppActivity::class.java),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        return notifyPendingIntent
     }
 
     data class Like(

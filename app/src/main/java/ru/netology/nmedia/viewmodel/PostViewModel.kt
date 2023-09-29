@@ -59,7 +59,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         get() = _photo
 
     //Post for edit
-    val edited = MutableLiveData(empty)
+    private val edited = MutableLiveData(empty)
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
