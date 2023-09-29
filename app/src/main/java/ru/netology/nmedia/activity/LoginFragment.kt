@@ -37,7 +37,7 @@ class LoginFragment : Fragment() {
         loginViewModel.dataState.observe(viewLifecycleOwner) { state->
             when {
                 state.userNotFoundError || state.incorrectPasswordError -> Toast.makeText(context, R.string.user_not_found.toString(), Toast.LENGTH_LONG).show()
-                state.error -> Toast.makeText(context, R.string.unknown_error, Toast.LENGTH_LONG).show()
+                state.error -> Toast.makeText(context, R.string.unknown_error.toString(), Toast.LENGTH_LONG).show()
             }
 
         }
