@@ -102,14 +102,19 @@ class FeedFragment : Fragment() {
                     }
                 )
             }
-//            override fun onPostClick(post: Post) {
-//                findNavController().navigate(
-//                    R.id.action_feedFragment_to_postFragment,
-//                    Bundle().apply {
-//                        putLong("postId", post.id)
-//                    }
-//                )
-//            }
+
+            override fun onPostClick(post: Post) {
+                if (authViewModel.authorized) {
+                    findNavController().navigate(
+                        R.id.action_feedFragment_to_postFragment,
+                        Bundle().apply {
+                            putLong("postId", post.id)
+                        }
+                    )
+                } else {
+                    findNavController().navigate(R.id.action_feedFragment_to_loginFragment)
+                }
+            }
 
             override fun onImageClick(post: Post) {
                 findNavController().navigate(
@@ -121,12 +126,10 @@ class FeedFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                authViewModel.state.observe(viewLifecycleOwner) {
-                    if (authViewModel.authorized) {
-                        viewModel.likeById(post)
-                    } else {
-                        findNavController().navigate(R.id.action_feedFragment_to_loginFragment)
-                    }
+                if (authViewModel.authorized) {
+                    viewModel.likeById(post)
+                } else {
+                    findNavController().navigate(R.id.action_feedFragment_to_loginFragment)
                 }
             }
 

@@ -81,7 +81,7 @@ class RegisterFragment : Fragment() {
                 )
             }
             if (authViewModel.authorized) {
-                findNavController().navigateUp()
+                findNavController().navigate(R.id.feedFragment)
             }
         }
 

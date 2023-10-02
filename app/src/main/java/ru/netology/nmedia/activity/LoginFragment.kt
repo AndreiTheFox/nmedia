@@ -34,10 +34,19 @@ class LoginFragment : Fragment() {
         binding.navBack.setOnClickListener {
             findNavController().navigateUp()
         }
-        loginViewModel.dataState.observe(viewLifecycleOwner) { state->
+        loginViewModel.dataState.observe(viewLifecycleOwner) { state ->
             when {
-                state.userNotFoundError || state.incorrectPasswordError -> Toast.makeText(context, R.string.user_not_found.toString(), Toast.LENGTH_LONG).show()
-                state.error -> Toast.makeText(context, R.string.unknown_error.toString(), Toast.LENGTH_LONG).show()
+                state.userNotFoundError || state.incorrectPasswordError -> Toast.makeText(
+                    context,
+                    R.string.user_not_found.toString(),
+                    Toast.LENGTH_LONG
+                ).show()
+
+                state.error -> Toast.makeText(
+                    context,
+                    R.string.unknown_error.toString(),
+                    Toast.LENGTH_LONG
+                ).show()
             }
 
         }
@@ -55,6 +64,11 @@ class LoginFragment : Fragment() {
                     return@setOnClickListener
                 }
                 loginViewModel.tryLogin(username = accountName, password = accountPassword)
+            }
+        }
+        binding.navRegister.setOnClickListener {
+            if (!authViewModel.authorized) {
+                findNavController().navigate(R.id.registerFragment)
             }
         }
 

@@ -96,7 +96,7 @@
         android:layout_marginStart="@dimen/common_spacing"
         android:checkable="true"
         android:contentDescription="@string/share_post_button"
-        app:icon="@drawable/ic_share_selector_24dp"
+        app:icon="@drawable/ic_share_24"
         app:layout_constraintStart_toEndOf="@id/like"
         app:layout_constraintTop_toBottomOf="@id/attachment"
         tools:ignore="RedundantDescriptionCheck,TouchTargetSizeCheck"

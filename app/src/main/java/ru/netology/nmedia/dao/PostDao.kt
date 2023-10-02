@@ -39,4 +39,13 @@ interface PostDao {
                 """
     )
     suspend fun likeById(id: Long)
+
+    @Query ("""
+                UPDATE PostEntity SET
+                shares = shares +1,
+                sharedByMe = 1
+                WHERE id = :id;
+            """
+    )
+    fun sharePost(id: Long)
 }

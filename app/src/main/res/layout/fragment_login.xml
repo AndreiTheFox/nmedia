@@ -88,5 +88,19 @@
         android:drawableLeft="@drawable/ic_back_24"
         android:text="@string/back"
         tools:ignore="MissingConstraints,RtlHardcoded"
-        android:layout_gravity="left|clip_vertical"/>
+        app:layout_constraintBaseline_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <Button
+        android:id="@+id/navRegister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|center_vertical"
+        android:drawableRight="@drawable/ic_forward_24"
+        android:text="@string/register"
+        tools:ignore="MissingConstraints,RtlHardcoded"
+        app:layout_constraintBaseline_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+ />
 </androidx.constraintlayout.widget.ConstraintLayout>

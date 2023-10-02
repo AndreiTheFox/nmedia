@@ -64,9 +64,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val postCreated: LiveData<Unit>
         get() = _postCreated
 
-//    init {
-//        loadPosts()
-//    }
+    init {
+        loadPosts()
+    }
 
     fun setPhoto(uri: Uri?, file: File?) {
         _photo.value = PhotoModel(uri, file)

@@ -21,7 +21,8 @@ interface OnInteractionListener {
     fun onShare(post: Post) {}
     fun onRemove(post: Post) {}
     fun onEdit(post: Post) {}
-    fun onImageClick (post: Post) {}
+    fun onImageClick(post: Post) {}
+
     //    fun onVideoClick(post: Post) {}
     fun onPostClick(post: Post) {}
 }
@@ -53,11 +54,11 @@ class PostViewHolder(
             if (post.attachment != null) {
                 val downloadAttachUrl = "${attachmentsUrl}/${post.attachment.url}"
                 glideDownloadFullImage(downloadAttachUrl, binding.attachment)
-                binding.attachment.visibility = View.VISIBLE }
-            else {
+                binding.attachment.visibility = View.VISIBLE
+            } else {
                 binding.attachment.visibility = View.GONE
             }
-            glideDownloadRoundImage(downloadAvatarUrl,binding.avatar)
+            glideDownloadRoundImage(downloadAvatarUrl, binding.avatar)
             author.text = post.author
             published.text = post.published
             content.text = post.content
@@ -65,11 +66,8 @@ class PostViewHolder(
             sharePostButton.text = counterWrite(post.shares)
             viewsButton.text = counterWrite(post.views)
             like.isChecked = post.likedByMe
-            sharePostButton.isChecked = post.sharedByMe
-            sharePostButton.isCheckable = !post.sharedByMe
 
             menu.isVisible = post.ownedByMe
-
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)
@@ -90,6 +88,7 @@ class PostViewHolder(
                     }
                 }.show()
             }
+
             like.setOnClickListener {
                 like.isChecked = !like.isChecked
                 onInteractionListener.onLike(post)
@@ -98,10 +97,13 @@ class PostViewHolder(
             sharePostButton.setOnClickListener {
                 onInteractionListener.onShare(post)
             }
-            attachment.setOnClickListener{
+            attachment.setOnClickListener {
                 onInteractionListener.onImageClick(post)
             }
 
+            root.setOnClickListener {
+                onInteractionListener.onPostClick(post)
+            }
         }
     }
 }
