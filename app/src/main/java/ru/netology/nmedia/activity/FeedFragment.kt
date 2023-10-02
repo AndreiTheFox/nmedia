@@ -27,7 +27,6 @@ import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 
-
 class FeedFragment : Fragment() {
     private val viewModel: PostViewModel by activityViewModels()
     val authViewModel by viewModels<AuthViewModel>()
@@ -46,57 +45,51 @@ class FeedFragment : Fragment() {
             false
         )
 
-        var currentMenuProvider: MenuProvider? = null
+        //Menu code
         authViewModel.state.observe(viewLifecycleOwner) {
             requireActivity().invalidateOptionsMenu()
         }
 
-        if (currentMenuProvider!=null) {
-            requireActivity().removeMenuProvider(currentMenuProvider)
-        }
-        else {
-            requireActivity().addMenuProvider(
-                object : MenuProvider {
-                    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                        menuInflater.inflate(R.menu.auth_menu, menu)
-                        menu.setGroupVisible(R.id.registered, authViewModel.authorized)
-                        menu.setGroupVisible(R.id.unregistered, !authViewModel.authorized)
-                    }
+        requireActivity().addMenuProvider(
+            object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.auth_menu, menu)
+                    menu.setGroupVisible(R.id.registered, authViewModel.authorized)
+                    menu.setGroupVisible(R.id.unregistered, !authViewModel.authorized)
+                }
 
-                    override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
-                        when (menuItem.itemId) {
-                            R.id.login -> {
-                                findNavController()
-                                    .navigate(
-                                        R.id.action_feedFragment_to_loginFragment
-                                    )
-                                true
-                            }
-
-                            R.id.loguot -> {
-                                LogoutDialog().show(
-                                    parentFragmentManager, LogoutDialog.TAG
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
+                    when (menuItem.itemId) {
+                        R.id.login -> {
+                            findNavController()
+                                .navigate(
+                                    R.id.action_feedFragment_to_loginFragment
                                 )
-                                true
-                            }
-
-                            R.id.register -> {
-                                findNavController()
-                                    .navigate(
-                                        R.id.action_feedFragment_to_registerFragment
-                                    )
-                                true
-                            }
-
-                            else -> false
+                            true
                         }
 
-                }.also {
-                    currentMenuProvider = it
-                },
-                viewLifecycleOwner
-            )
-        }
+                        R.id.loguot -> {
+                            LogoutDialog().show(
+                                parentFragmentManager, LogoutDialog.TAG
+                            )
+                            true
+                        }
+
+                        R.id.register -> {
+                            findNavController()
+                                .navigate(
+                                    R.id.action_feedFragment_to_registerFragment
+                                )
+                            true
+                        }
+
+                        else -> false
+                    }
+
+            },
+            viewLifecycleOwner
+        )
+        //End of Menu code
 
         val adapter = PostsAdapter(object : OnInteractionListener {
 
@@ -172,11 +165,11 @@ class FeedFragment : Fragment() {
         }
 
         binding.fab.setOnClickListener {
-                if (authViewModel.authorized) {
-                    findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
-                } else {
-                    findNavController().navigate(R.id.action_feedFragment_to_loginFragment)
-                }
+            if (authViewModel.authorized) {
+                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            } else {
+                findNavController().navigate(R.id.action_feedFragment_to_loginFragment)
+            }
         }
 
 
