@@ -6,13 +6,16 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
+import javax.inject.Inject
 
-class LogoutDialog : DialogFragment() {
+class LogoutDialog @Inject constructor (
+    private val appAuth: AppAuth
+): DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         AlertDialog.Builder(requireContext())
             .setMessage(R.string.logoutConfirm)
             .setPositiveButton(R.string.logout) { dialog, _ ->
-                AppAuth.getInstance().removeAuth()
+                appAuth.removeAuth()
                 dialog.cancel()
             }
             .setNegativeButton(R.string.cancel) { dialog, _ ->

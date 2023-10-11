@@ -14,13 +14,18 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.AppActivity
 import ru.netology.nmedia.auth.AppAuth
+import javax.inject.Inject
 import kotlin.random.Random
 
+@AndroidEntryPoint
 class FCMService : FirebaseMessagingService() {
     private val channelId: String = "Nmedia Notifications"
+    @Inject
+    lateinit var appAuth: AppAuth
 
     @SuppressLint("ObsoleteSdkInt")
     override fun onCreate() {
@@ -39,13 +44,13 @@ class FCMService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         val msgFromServer = Gson().fromJson(message.data["content"], RecivedMsg::class.java)
         val reciever = msgFromServer.recipientId
-        val myCurrentId = AppAuth.getInstance().authStateFlow.value.id
+        val myCurrentId = appAuth.authStateFlow.value.id
 
         when {
             reciever == null -> handleNewNotification(msgFromServer)
             reciever == myCurrentId -> handleNewNotification(msgFromServer)
-            reciever == 0L && reciever != myCurrentId -> AppAuth.getInstance().sendPushToken()
-            reciever != 0L && reciever != myCurrentId -> AppAuth.getInstance().sendPushToken()
+            reciever == 0L && reciever != myCurrentId -> appAuth.sendPushToken()
+            reciever != 0L && reciever != myCurrentId -> appAuth.sendPushToken()
         }
 
         when (message.data["action"]) {
@@ -169,7 +174,7 @@ class FCMService : FirebaseMessagingService() {
     }
 
     override fun onNewToken(token: String) {
-        AppAuth.getInstance().sendPushToken(token)
+        appAuth.sendPushToken(token)
     }
 
     private fun getCurrentPendingIntent(): PendingIntent {

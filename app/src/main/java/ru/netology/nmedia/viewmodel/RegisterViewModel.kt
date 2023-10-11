@@ -4,16 +4,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import ru.netology.nmedia.api.ApiNmedia
+import ru.netology.nmedia.api.ApiService
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.Token
 import ru.netology.nmedia.error.*
 import ru.netology.nmedia.model.RegisterState
 import java.io.IOException
 import java.net.HttpURLConnection
+import javax.inject.Inject
+@HiltViewModel
+class RegisterViewModel @Inject constructor (
+    private val apiService : ApiService,
+    private val appAuth: AppAuth
 
-class RegisterViewModel : ViewModel() {
+): ViewModel() {
     private val _dataState = MutableLiveData<RegisterState>()
     val dataState: LiveData<RegisterState>
         get() = _dataState
@@ -23,7 +29,7 @@ class RegisterViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val result = register(login, password, username)
-                AppAuth.getInstance().setAuth(result.id, result.token)
+                appAuth.setAuth(result.id, result.token)
 
             } catch (e: ApiError) {
                 _dataState.value = when (e.status) {
@@ -49,7 +55,7 @@ class RegisterViewModel : ViewModel() {
     private suspend fun register(login: String, password: String, username: String): Token {
 
         val response = try {
-            ApiNmedia.service.registerUser(login, password, username)
+            apiService.registerUser(login, password, username)
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {
