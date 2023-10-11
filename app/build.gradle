@@ -6,7 +6,6 @@ plugins {
     id 'com.google.dagger.hilt.android'
 }
 
-
 android {
 
     namespace 'ru.netology.nmedia'

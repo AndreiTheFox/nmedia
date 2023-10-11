@@ -72,18 +72,17 @@ class NewPostFragment : Fragment() {
                     menuInflater.inflate(R.menu.save_menu, menu)
                 }
 
-                val content = binding.edit.text.toString()
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
                     when (menuItem.itemId) {
                         R.id.save -> {
-                            if (content.isNotBlank()) {
+                            if (binding.edit.text.toString().isNotBlank()) {
                                 viewModel.changeContent(binding.edit.text.toString())
                                 viewModel.save()
                                 AndroidUtils.hideKeyboard(requireView())
                                 true
                             } else {
                                 findNavController().navigateUp()
-                                true
+                                false
                             }
                         }
 

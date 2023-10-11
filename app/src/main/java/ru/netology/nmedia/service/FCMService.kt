@@ -1,13 +1,11 @@
 package ru.netology.nmedia.service
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -22,23 +20,23 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 @AndroidEntryPoint
-class FCMService : FirebaseMessagingService() {
-    private val channelId: String = "Nmedia Notifications"
+class FCMService @Inject constructor(
+//    @ApplicationContext
+//    private val context: Context
+) : FirebaseMessagingService() {
     @Inject
     lateinit var appAuth: AppAuth
+    private val channelId: String = "Nmedia Notifications"
 
-    @SuppressLint("ObsoleteSdkInt")
     override fun onCreate() {
         super.onCreate()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = getString(R.string.channel_remote_name)
-            val descriptionText = getString(R.string.channel_remote_description)
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val mChannel = NotificationChannel(channelId, name, importance)
-            mChannel.description = descriptionText
-            val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(mChannel)
-        }
+        val name = getString(R.string.channel_remote_name)
+        val descriptionText = getString(R.string.channel_remote_description)
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val mChannel = NotificationChannel(channelId, name, importance)
+        mChannel.description = descriptionText
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(mChannel)
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
@@ -73,7 +71,7 @@ class FCMService : FirebaseMessagingService() {
         }
 
     }
-    @SuppressLint("StringFormatInvalid")
+
     private fun handleNewNotification(msg : RecivedMsg) {
         val notificationMessage = getString(R.string.new_notification) + " " + msg.content
 
@@ -177,8 +175,8 @@ class FCMService : FirebaseMessagingService() {
         appAuth.sendPushToken(token)
     }
 
-    private fun getCurrentPendingIntent(): PendingIntent {
 
+    private fun getCurrentPendingIntent(): PendingIntent {
         return PendingIntent.getActivity(
             this, 0,
             Intent(this, AppActivity::class.java),
