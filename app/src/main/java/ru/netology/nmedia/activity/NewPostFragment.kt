@@ -72,13 +72,19 @@ class NewPostFragment : Fragment() {
                     menuInflater.inflate(R.menu.save_menu, menu)
                 }
 
+                val content = binding.edit.text.toString()
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
                     when (menuItem.itemId) {
                         R.id.save -> {
-                            viewModel.changeContent(binding.edit.text.toString())
-                            viewModel.save()
-                            AndroidUtils.hideKeyboard(requireView())
-                            true
+                            if (content.isNotBlank()) {
+                                viewModel.changeContent(binding.edit.text.toString())
+                                viewModel.save()
+                                AndroidUtils.hideKeyboard(requireView())
+                                true
+                            } else {
+                                findNavController().navigateUp()
+                                true
+                            }
                         }
 
                         else -> false
@@ -87,13 +93,13 @@ class NewPostFragment : Fragment() {
             viewLifecycleOwner
         )
         viewModel.photo.observe(viewLifecycleOwner) { photo ->
-            if (photo == null) {
+            if (photo != null) {
+                binding.photoContainer.visibility = View.VISIBLE
+                binding.photo.setImageURI(photo.uri)
+            } else {
                 binding.photoContainer.visibility = View.GONE
                 return@observe
             }
-            binding.photoContainer.visibility = View.VISIBLE
-            binding.photo.setImageURI(photo.uri)
-
         }
         binding.pickPhoto.setOnClickListener {
             ImagePicker.with(this)
@@ -101,6 +107,7 @@ class NewPostFragment : Fragment() {
                 .compress(2048)
                 .provider(ImageProvider.GALLERY)
                 .createIntent(photoLauncher::launch)
+            binding.removeAttachment.visibility = View.VISIBLE
         }
         binding.takePhoto.setOnClickListener {
             ImagePicker.Builder(this)
@@ -108,9 +115,11 @@ class NewPostFragment : Fragment() {
                 .crop()
                 .compress(2048)
                 .createIntent(photoLauncher::launch)
+            binding.removeAttachment.visibility = View.VISIBLE
         }
         binding.removeAttachment.setOnClickListener {
             viewModel.clearPhoto()
+            binding.photoContainer.visibility = View.GONE
         }
         return binding.root
     }
