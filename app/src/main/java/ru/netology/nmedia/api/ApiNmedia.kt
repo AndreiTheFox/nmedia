@@ -12,6 +12,9 @@ interface ApiService {
     @GET("posts")
     suspend fun getAll(): Response<List<Post>>
 
+    @GET("posts/latest")
+    suspend fun getLatest( @Query("count") count: Int): Response<List<Post>>
+
     @GET("posts/{id}")
     suspend fun getById(@Path("id") id: Long): Response<Post>
 
@@ -29,16 +32,32 @@ interface ApiService {
 
     @GET("posts/{id}/newer")
     suspend fun getNewer(@Path("id") id: Long): Response<List<Post>>
+
+    @GET("posts/{id}/before")
+    suspend fun getBefore(@Path("id") id: Long, @Query("count") count: Int): Response<List<Post>>
+
+    @GET("posts/{id}/after")
+    suspend fun getAfter(@Path("id") id: Long, @Query("count") count: Int): Response<List<Post>>
+
     @Multipart
     @POST("media")
     suspend fun upload(@Part part: MultipartBody.Part): Response<Media>
 
     @FormUrlEncoded
     @POST("users/authentication")
-    suspend fun updateUser(@Field("login") login: String, @Field("pass") pass: String): Response<Token>
+    suspend fun updateUser(
+        @Field("login") login: String,
+        @Field("pass") pass: String
+    ): Response<Token>
+
     @POST("users/push-tokens")
     suspend fun savePushToken(@Body pushToken: PushToken): Response<Unit>
+
     @FormUrlEncoded
     @POST("users/registration")
-    suspend fun registerUser(@Field("login") login: String, @Field("pass") pass: String, @Field("name") name: String): Response<Token>
+    suspend fun registerUser(
+        @Field("login") login: String,
+        @Field("pass") pass: String,
+        @Field("name") name: String
+    ): Response<Token>
 }

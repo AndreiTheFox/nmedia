@@ -12,11 +12,16 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentLoginBinding
+import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.LoginViewModel
+import javax.inject.Inject
+
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
+    @Inject
+    lateinit var repo: PostRepositoryImpl
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -28,11 +33,13 @@ class LoginFragment : Fragment() {
             container,
             false
         )
+
         val loginViewModel: LoginViewModel by activityViewModels()
 
         binding.navBack.setOnClickListener {
             findNavController().navigateUp()
         }
+
         loginViewModel.dataState.observe(viewLifecycleOwner) { state ->
             when {
                 state.userNotFoundError || state.incorrectPasswordError -> Toast.makeText(
@@ -49,9 +56,12 @@ class LoginFragment : Fragment() {
             }
 
         }
+
         authViewModel.state.observe(viewLifecycleOwner) {
             if (authViewModel.authorized) {
+
                 findNavController().navigateUp()
+
             }
 
             binding.login.setOnClickListener {

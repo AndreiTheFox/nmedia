@@ -9,7 +9,9 @@ import kotlinx.coroutines.launch
 import ru.netology.nmedia.api.ApiService
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.Token
-import ru.netology.nmedia.error.*
+import ru.netology.nmedia.error.ApiError
+import ru.netology.nmedia.error.NetworkError
+import ru.netology.nmedia.error.UnknownError
 import ru.netology.nmedia.model.LoginState
 import java.io.IOException
 import java.net.HttpURLConnection

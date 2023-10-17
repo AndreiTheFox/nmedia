@@ -12,10 +12,13 @@ import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.OnInteractionListener
@@ -55,48 +58,6 @@ class FeedFragment : Fragment() {
         authViewModel.state.observe(viewLifecycleOwner) {
             requireActivity().invalidateOptionsMenu()
         }
-
-        requireActivity().addMenuProvider(
-            object : MenuProvider {
-                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                    menuInflater.inflate(R.menu.auth_menu, menu)
-                    menu.setGroupVisible(R.id.registered, authViewModel.authorized)
-                    menu.setGroupVisible(R.id.unregistered, !authViewModel.authorized)
-                }
-
-                override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
-                    when (menuItem.itemId) {
-                        R.id.login -> {
-                            findNavController()
-                                .navigate(
-                                    R.id.action_feedFragment_to_loginFragment
-                                )
-                            true
-                        }
-
-                        R.id.loguot -> {
-                            LogoutDialog(appAuth).show(
-                                parentFragmentManager, LogoutDialog.TAG
-                            )
-                            true
-                        }
-
-                        R.id.register -> {
-                            findNavController()
-                                .navigate(
-                                    R.id.action_feedFragment_to_registerFragment
-                                )
-                            true
-                        }
-
-                        else -> false
-                    }
-
-            },
-            viewLifecycleOwner
-        )
-        //End of Menu code
-
         val adapter = PostsAdapter(object : OnInteractionListener {
 
             override fun onEdit(post: Post) {
@@ -156,6 +117,47 @@ class FeedFragment : Fragment() {
             }
         })
 
+        requireActivity().addMenuProvider(
+            object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.auth_menu, menu)
+                    menu.setGroupVisible(R.id.registered, authViewModel.authorized)
+                    menu.setGroupVisible(R.id.unregistered, !authViewModel.authorized)
+                }
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
+                    when (menuItem.itemId) {
+                        R.id.login -> {
+                            findNavController()
+                                .navigate(
+                                    R.id.action_feedFragment_to_loginFragment
+                                )
+                            true
+                        }
+
+                        R.id.loguot -> {
+                            LogoutDialog(appAuth).show(
+                                parentFragmentManager, LogoutDialog.TAG
+                            )
+                            true
+                        }
+
+                        R.id.register -> {
+                            findNavController()
+                                .navigate(
+                                    R.id.action_feedFragment_to_registerFragment
+                                )
+                            true
+                        }
+
+                        else -> false
+                    }
+
+            },
+            viewLifecycleOwner
+        )
+        //End of Menu code
+
         binding.list.adapter = adapter
 
         viewModel.dataState.observe(viewLifecycleOwner) { state ->
@@ -168,10 +170,26 @@ class FeedFragment : Fragment() {
             }
         }
 
-        viewModel.data.observe(viewLifecycleOwner) { state ->
-            adapter.submitList(state.posts)
-            binding.emptyText.isVisible = state.empty
+        @Suppress("DEPRECATION")
+        lifecycleScope.launchWhenCreated {
+            viewModel.data.collectLatest {
+                adapter.submitData(it)
+            }
         }
+        @Suppress("DEPRECATION")
+        lifecycleScope.launchWhenCreated {
+            adapter.loadStateFlow.collectLatest { state ->
+                binding.swiperefresh.isRefreshing =
+                    state.refresh is LoadState.Loading ||
+                            state.prepend is LoadState.Loading ||
+                            state.append is LoadState.Loading
+            }
+        }
+
+//        viewModel.data.observe(viewLifecycleOwner) { state ->
+//            adapter.submitList(state.posts)
+//            binding.emptyText.isVisible = state.empty
+//        }
 
         binding.fab.setOnClickListener {
             if (authViewModel.authorized) {
@@ -183,19 +201,21 @@ class FeedFragment : Fragment() {
 
 
         binding.swiperefresh.setOnRefreshListener {
-            viewModel.loadPosts()
-            binding.swiperefresh.isRefreshing = false
+            adapter.refresh()
         }
-
-        viewModel.newPostsCount.observe(viewLifecycleOwner) {
-            if (it > 0) {
-                binding.loadNewPosts.visibility = View.VISIBLE
-                val buttonText = getString(R.string.new_posts) + "$it"
-                binding.loadNewPosts.text = buttonText
-            } else {
-                binding.loadNewPosts.visibility = View.GONE
+        authViewModel.state.observe(viewLifecycleOwner) {
+                adapter.refresh()
             }
-        }
+
+//        viewModel.newPostsCount.observe(viewLifecycleOwner) {
+//            if (it > 0) {
+//                binding.loadNewPosts.visibility = View.VISIBLE
+//                val buttonText = getString(R.string.new_posts) + "$it"
+//                binding.loadNewPosts.text = buttonText
+//            } else {
+//                binding.loadNewPosts.visibility = View.GONE
+//            }
+//        }
 
         //Плавное прокручивание ленты постов при добавлении свежих загруженных постов в holder адаптера после нажатия пользователя
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {

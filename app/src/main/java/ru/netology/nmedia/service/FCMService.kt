@@ -20,10 +20,7 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 @AndroidEntryPoint
-class FCMService @Inject constructor(
-//    @ApplicationContext
-//    private val context: Context
-) : FirebaseMessagingService() {
+class FCMService: FirebaseMessagingService() {
     @Inject
     lateinit var appAuth: AppAuth
     private val channelId: String = "Nmedia Notifications"

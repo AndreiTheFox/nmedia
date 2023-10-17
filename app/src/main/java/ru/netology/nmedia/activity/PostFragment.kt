@@ -69,10 +69,10 @@ class PostFragment : Fragment() {
 //                startActivity(intent)
 //            }
         })
-        viewModel.data.observe(viewLifecycleOwner) { posts ->
-            val post = posts.posts.find { it.id == postId } ?: return@observe
-            adapter.bind(post)
-        }
+//        viewModel.data.observe(viewLifecycleOwner) { posts ->
+//            val post = posts.posts.find { it.id == postId } ?: return@observe
+//            adapter.bind(post)
+//        }
 
         return binding.root
     }

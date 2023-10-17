@@ -5,8 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.core.view.isVisible
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
@@ -15,6 +15,7 @@ import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.util.counterWrite
 import ru.netology.nmedia.util.glideDownloadFullImage
 import ru.netology.nmedia.util.glideDownloadRoundImage
+import javax.inject.Singleton
 
 interface OnInteractionListener {
     fun onLike(post: Post) {}
@@ -26,9 +27,9 @@ interface OnInteractionListener {
     //    fun onVideoClick(post: Post) {}
     fun onPostClick(post: Post) {}
 }
-
-class PostsAdapter(private val onInteractionListener: OnInteractionListener) :
-    ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
+@Singleton
+class PostsAdapter (private val onInteractionListener: OnInteractionListener) :
+    PagingDataAdapter<Post, PostViewHolder>(PostDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -36,7 +37,7 @@ class PostsAdapter(private val onInteractionListener: OnInteractionListener) :
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        val post = getItem(position)
+        val post = getItem(position) ?: return
         holder.bind(post)
     }
 }
