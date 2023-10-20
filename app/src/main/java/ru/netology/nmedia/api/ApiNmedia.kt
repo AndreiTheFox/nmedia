@@ -9,11 +9,10 @@ import ru.netology.nmedia.dto.PushToken
 import ru.netology.nmedia.dto.Token
 
 interface ApiService {
-    @GET("posts")
-    suspend fun getAll(): Response<List<Post>>
+//    @GET("posts")
+//    suspend fun getAll(): Response<List<Post>>
 
-    @GET("posts/latest")
-    suspend fun getLatest( @Query("count") count: Int): Response<List<Post>>
+
 
     @GET("posts/{id}")
     suspend fun getById(@Path("id") id: Long): Response<Post>
@@ -34,10 +33,20 @@ interface ApiService {
     suspend fun getNewer(@Path("id") id: Long): Response<List<Post>>
 
     @GET("posts/{id}/before")
-    suspend fun getBefore(@Path("id") id: Long, @Query("count") count: Int): Response<List<Post>>
+    suspend fun getBefore(
+        @Path("id") id: Long,
+        @Query("count") count: Int
+    ): Response<List<Post>>
 
     @GET("posts/{id}/after")
-    suspend fun getAfter(@Path("id") id: Long, @Query("count") count: Int): Response<List<Post>>
+    suspend fun getAfter(
+        @Path("id") id: Long,
+        @Query("count") count: Int
+    ): Response<List<Post>>
+    @GET("posts/latest")
+    suspend fun getLatest(
+        @Query("count") count: Int
+    ): Response<List<Post>>
 
     @Multipart
     @POST("media")

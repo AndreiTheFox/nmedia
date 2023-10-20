@@ -61,10 +61,10 @@ class NewPostFragment : Fragment() {
         arguments?.textArg
             ?.let(binding.edit::setText)
 
-        viewModel.postCreated.observe(viewLifecycleOwner) {
-            viewModel.loadPosts()
-            findNavController().navigateUp()
-        }
+//        viewModel.postCreated.observe(viewLifecycleOwner) {
+//            viewModel.loadPosts()
+//            findNavController().navigateUp()
+//        }
 
         requireActivity().addMenuProvider(
             object : MenuProvider {

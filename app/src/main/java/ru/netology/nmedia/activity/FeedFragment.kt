@@ -9,14 +9,12 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.MenuProvider
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import ru.netology.nmedia.R
@@ -160,15 +158,15 @@ class FeedFragment : Fragment() {
 
         binding.list.adapter = adapter
 
-        viewModel.dataState.observe(viewLifecycleOwner) { state ->
-            binding.progress.isVisible = state.loading
-            binding.swiperefresh.isRefreshing = state.refreshing
-            if (state.error) {
-                Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.retry) { viewModel.loadPosts() }
-                    .show()
-            }
-        }
+//        viewModel.dataState.observe(viewLifecycleOwner) { state ->
+//            binding.progress.isVisible = state.loading
+//            binding.swiperefresh.isRefreshing = state.refreshing
+//            if (state.error) {
+//                Snackbar.make(binding.root, R.string.error_loading, Snackbar.LENGTH_LONG)
+//                    .setAction(R.string.retry) { viewModel.loadPosts() }
+//                    .show()
+//            }
+//        }
 
         @Suppress("DEPRECATION")
         lifecycleScope.launchWhenCreated {
@@ -180,9 +178,9 @@ class FeedFragment : Fragment() {
         lifecycleScope.launchWhenCreated {
             adapter.loadStateFlow.collectLatest { state ->
                 binding.swiperefresh.isRefreshing =
-                    state.refresh is LoadState.Loading ||
-                            state.prepend is LoadState.Loading ||
-                            state.append is LoadState.Loading
+                    state.refresh is LoadState.Loading // ||
+                       //     state.prepend is LoadState.Loading ||
+                        //    state.append is LoadState.Loading
             }
         }
 
@@ -227,10 +225,10 @@ class FeedFragment : Fragment() {
         })
 
         //Загрузить свежие посты
-        binding.loadNewPosts.setOnClickListener {
-            viewModel.updateFeed()
-            binding.loadNewPosts.visibility = View.GONE
-        }
+//        binding.loadNewPosts.setOnClickListener {
+//            viewModel.updateFeed()
+//            binding.loadNewPosts.visibility = View.GONE
+//        }
 
         return binding.root
     }
