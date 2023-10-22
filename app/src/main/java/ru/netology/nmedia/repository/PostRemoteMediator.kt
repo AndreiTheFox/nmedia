@@ -29,7 +29,20 @@ class PostRemoteMediator(
         try {
             val response = when (loadType) {
                 LoadType.REFRESH -> {
-                    apiService.getLatest(state.config.initialLoadSize)
+
+                    if (postDao.isEmpty()&&postRemoteKeyDao.isEmpty())
+                    {
+                        //База данных пуста
+                        apiService.getLatest(state.config.initialLoadSize)
+
+                    }
+                    else{
+                        //База данных не пуста, то как Prepend
+                        val id = postRemoteKeyDao.max() ?: return MediatorResult.Success(
+                            endOfPaginationReached = true
+                        )
+                        apiService.getAfter(id, state.config.pageSize)
+                    }
                 }
 
                 LoadType.APPEND -> {
@@ -63,22 +76,33 @@ class PostRemoteMediator(
             appDb.withTransaction {
                 when (loadType) {
                     LoadType.REFRESH -> {
-                        postRemoteKeyDao.clear()
-                        postRemoteKeyDao.insert(
-                            listOf(
+                        if (postDao.isEmpty()) { //Если база данных пуста
+                            postRemoteKeyDao.clear()
+                            postRemoteKeyDao.insert(
+                                listOf(
+                                    PostRemoteKeyEntity(
+                                        type = PostRemoteKeyEntity.KeyType.AFTER,
+                                        id = body.first().id,
+                                    ),
+                                    PostRemoteKeyEntity(
+                                        type = PostRemoteKeyEntity.KeyType.BEFORE,
+                                        id = body.last().id,
+                                    ),
+                                )
+
+                            )
+                            // postDao.clear()
+                        }
+                        else{ //Если база данных не пуста
+                            postRemoteKeyDao.insert(
                                 PostRemoteKeyEntity(
                                     type = PostRemoteKeyEntity.KeyType.AFTER,
                                     id = body.first().id,
-                                ),
-                                PostRemoteKeyEntity(
-                                    type = PostRemoteKeyEntity.KeyType.BEFORE,
-                                    id = body.last().id,
-                                ),
+                                )
                             )
+                        }
+                        }
 
-                        )
-                       // postDao.clear()
-                    }
 
                     LoadType.PREPEND -> {
                         postRemoteKeyDao.insert(
