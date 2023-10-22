@@ -49,7 +49,11 @@ class PostRemoteMediator(
                     val id = postRemoteKeyDao.min() ?: return MediatorResult.Success(
                         endOfPaginationReached = false
                     )
+                    if(id>1)
                     apiService.getBefore(id, state.config.pageSize)
+                    else return MediatorResult.Success(
+                        endOfPaginationReached = false
+                    )
                 }
 
                 LoadType.PREPEND -> {
