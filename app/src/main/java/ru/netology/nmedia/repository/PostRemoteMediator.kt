@@ -21,7 +21,6 @@ class PostRemoteMediator(
     private val postRemoteKeyDao: PostRemoteKeyDao,
     private val appDb: AppDb,
 ) : RemoteMediator<Int, PostEntity>() {
-    // override fun getRefreshKey(state: PagingState<Long, Post>): Long? = null
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, PostEntity>
@@ -29,12 +28,10 @@ class PostRemoteMediator(
         try {
             val response = when (loadType) {
                 LoadType.REFRESH -> {
-
                     if (postDao.isEmpty()&&postRemoteKeyDao.isEmpty())
                     {
                         //База данных пуста
                         apiService.getLatest(state.config.initialLoadSize)
-
                     }
                     else{
                         //База данных не пуста, то как Prepend
@@ -60,22 +57,15 @@ class PostRemoteMediator(
                     return MediatorResult.Success(
                         endOfPaginationReached = true
                     )
-//                    val id = postRemoteKeyDao.max() ?: return MediatorResult.Success(
-//                        endOfPaginationReached = true
-//                    )
-//                    apiService.getAfter(id, state.config.pageSize)
                 }
             }
             if (!response.isSuccessful) {
-//                println("life is good")
                 throw ApiError(response.code(), response.message())
             }
             val body = response.body() ?: throw ApiError(
                 response.code(),
                 response.message(),
             )
-//            val body = response.body().orEmpty()
-            //val nextKey = body.lastOrNull()?.id
 
             appDb.withTransaction {
                 when (loadType) {
@@ -95,7 +85,6 @@ class PostRemoteMediator(
                                 )
 
                             )
-                            // postDao.clear()
                         }
                         else{ //Если база данных не пуста
                             postRemoteKeyDao.insert(

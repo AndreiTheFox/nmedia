@@ -8,7 +8,9 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.MenuProvider
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -159,16 +161,8 @@ class FeedFragment : Fragment() {
         //End of Menu code
 
         binding.list.adapter = adapter.withLoadStateHeaderAndFooter(
-            header = PagingLoadStateAdapter(object : PagingLoadStateAdapter.OnInteractionListener {
-                override fun onRetry() {
-                    adapter.retry()
-                }
-            }),
-            footer = PagingLoadStateAdapter(object : PagingLoadStateAdapter.OnInteractionListener {
-                override fun onRetry() {
-                    adapter.retry()
-                }
-            }),
+            header = PagingLoadStateAdapter { adapter.retry() },
+            footer = PagingLoadStateAdapter { adapter.retry() },
         )
 
 //        viewModel.dataState.observe(viewLifecycleOwner) { state ->
@@ -195,10 +189,30 @@ class FeedFragment : Fragment() {
         @Suppress("DEPRECATION")
         lifecycleScope.launchWhenCreated {
             adapter.loadStateFlow.collectLatest { state ->
-                binding.swiperefresh.isRefreshing =
-                    state.refresh is LoadState.Loading // ||
-                //     state.prepend is LoadState.Loading ||
-                //    state.append is LoadState.Loading
+                val isListEmpty = state.refresh is LoadState.NotLoading && adapter.itemCount == 0
+                // show empty list
+                binding.emptyText.isVisible = isListEmpty
+
+                // Only show the list if refresh succeeds.
+                binding.list.isVisible = !isListEmpty
+
+                // Show the retry state if initial load or refresh fails.
+                binding.retry.isVisible = state.source.refresh is LoadState.Error
+
+                binding.swiperefresh.isRefreshing = state.refresh is LoadState.Loading
+                // Toast on any error, regardless of whether it came from RemoteMediator or PagingSource
+                val errorState = state.source.append as? LoadState.Error
+                    ?: state.source.prepend as? LoadState.Error
+                    ?: state.append as? LoadState.Error
+                    ?: state.prepend as? LoadState.Error
+                errorState?.let {
+                    Toast.makeText(
+                        parentFragment?.context,
+                        "\uD83D\uDE28 Wooops ${it.error}",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                }
             }
         }
 
@@ -215,7 +229,9 @@ class FeedFragment : Fragment() {
             }
         }
 
-
+        binding.retry.setOnClickListener {
+            adapter.retry()
+        }
         binding.swiperefresh.setOnRefreshListener {
             adapter.refresh()
         }
