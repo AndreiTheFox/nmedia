@@ -11,22 +11,26 @@ import android.view.ViewGroup
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
+import ru.netology.nmedia.adapter.FeedAdapter
 import ru.netology.nmedia.adapter.OnInteractionListener
-import ru.netology.nmedia.adapter.PostsAdapter
+import ru.netology.nmedia.adapter.PagingLoadStateAdapter
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dialogs.LogoutDialog
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.viewmodel.AuthViewModel
-import ru.netology.nmedia.viewmodel.PostViewModel
+import ru.netology.nmedia.viewmodel.FeedItemViewModel
 import javax.inject.Inject
 
 
@@ -35,8 +39,8 @@ class FeedFragment : Fragment() {
     @Inject
     lateinit var appAuth: AppAuth
 
-    private val viewModel: PostViewModel by activityViewModels()
-    val authViewModel: AuthViewModel by activityViewModels() //viewModels<AuthViewModel>()
+    private val viewModel: FeedItemViewModel by activityViewModels()
+    val authViewModel: AuthViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,8 +60,7 @@ class FeedFragment : Fragment() {
         authViewModel.state.observe(viewLifecycleOwner) {
             requireActivity().invalidateOptionsMenu()
         }
-        val adapter = PostsAdapter(object : OnInteractionListener {
-
+        val adapter = FeedAdapter(object : OnInteractionListener {
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
                 findNavController().navigate(
@@ -97,7 +100,6 @@ class FeedFragment : Fragment() {
                     findNavController().navigate(R.id.action_feedFragment_to_loginFragment)
                 }
             }
-
 
             override fun onRemove(post: Post) {
                 viewModel.removeById(post.id)
@@ -156,7 +158,18 @@ class FeedFragment : Fragment() {
         )
         //End of Menu code
 
-        binding.list.adapter = adapter
+        binding.list.adapter = adapter.withLoadStateHeaderAndFooter(
+            header = PagingLoadStateAdapter(object : PagingLoadStateAdapter.OnInteractionListener {
+                override fun onRetry() {
+                    adapter.retry()
+                }
+            }),
+            footer = PagingLoadStateAdapter(object : PagingLoadStateAdapter.OnInteractionListener {
+                override fun onRetry() {
+                    adapter.retry()
+                }
+            }),
+        )
 
 //        viewModel.dataState.observe(viewLifecycleOwner) { state ->
 //            binding.progress.isVisible = state.loading
@@ -167,6 +180,11 @@ class FeedFragment : Fragment() {
 //                    .show()
 //            }
 //        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.data.collectLatest(adapter::submitData)
+            }
+        }
 
         @Suppress("DEPRECATION")
         lifecycleScope.launchWhenCreated {
@@ -179,8 +197,8 @@ class FeedFragment : Fragment() {
             adapter.loadStateFlow.collectLatest { state ->
                 binding.swiperefresh.isRefreshing =
                     state.refresh is LoadState.Loading // ||
-                       //     state.prepend is LoadState.Loading ||
-                        //    state.append is LoadState.Loading
+                //     state.prepend is LoadState.Loading ||
+                //    state.append is LoadState.Loading
             }
         }
 
@@ -202,8 +220,8 @@ class FeedFragment : Fragment() {
             adapter.refresh()
         }
         authViewModel.state.observe(viewLifecycleOwner) {
-                adapter.refresh()
-            }
+            adapter.refresh()
+        }
 
 //        viewModel.newPostsCount.observe(viewLifecycleOwner) {
 //            if (it > 0) {

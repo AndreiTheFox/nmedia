@@ -21,6 +21,7 @@ import ru.netology.nmedia.dao.PostRemoteKeyDao
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.AttachmentType
+import ru.netology.nmedia.dto.FeedItem
 import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.dto.Post
@@ -39,18 +40,32 @@ class PostRepositoryImpl @Inject constructor(
     appDb: AppDb,
 ) : PostRepository {
     @OptIn(ExperimentalPagingApi::class)
-    override val data: Flow<PagingData<Post>> = Pager(
+    override val data: Flow<PagingData<FeedItem>> = Pager(
         config = PagingConfig(pageSize = 10, enablePlaceholders = false),
         pagingSourceFactory = {
             dao.getPagingSource()
         },
-        remoteMediator = PostRemoteMediator(apiService = apiService,
+        remoteMediator = PostRemoteMediator(
+            apiService = apiService,
             postDao = dao,
             postRemoteKeyDao = postRemoteKeyDao,
             appDb = appDb,
-            )
+        )
     ).flow
-        .map { it.map(PostEntity::toDto) }
+        .map {
+        it.map(PostEntity::toDto)
+//            .insertSeparators { previous, _ ->
+//            if (previous?.id?.rem(5) == 0L) {
+//                Ad(
+//                    Random.nextLong(),
+//                    "https://netology.ru",
+//                    "figma.jpg"
+//                )
+//            } else {
+//                null
+//            }
+//        }
+    }
 
 //    override val data = dao.getAll()
 //        .map(List<PostEntity>::toDto)

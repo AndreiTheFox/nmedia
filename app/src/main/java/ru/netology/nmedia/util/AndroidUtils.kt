@@ -5,6 +5,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 import ru.netology.nmedia.R
 
 object AndroidUtils {
@@ -35,7 +36,12 @@ fun counterWrite(incNumber: Int): String {
     }
     return counterWrite
 }
-
+fun ImageView.load(url: String, vararg transforms: BitmapTransformation = emptyArray()) =
+    Glide.with(this)
+        .load(url)
+        .timeout(10_000)
+        .transform(*transforms)
+        .into(this)
 fun glideDownloadRoundImage (url:String, view: View)  {
     Glide.with(view)
         .load(url)

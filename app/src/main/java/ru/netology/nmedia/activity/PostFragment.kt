@@ -15,7 +15,7 @@ import ru.netology.nmedia.adapter.OnInteractionListener
 import ru.netology.nmedia.adapter.PostViewHolder
 import ru.netology.nmedia.databinding.FragmentPostBinding
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.viewmodel.PostViewModel
+import ru.netology.nmedia.viewmodel.FeedItemViewModel
 @AndroidEntryPoint
 class PostFragment : Fragment() {
     override fun onCreateView(
@@ -28,7 +28,7 @@ class PostFragment : Fragment() {
             container,
             false
         )
-        val viewModel: PostViewModel by activityViewModels()
+        val viewModel: FeedItemViewModel by activityViewModels()
         val postId = arguments?.getLong("postId")
 
         val adapter = PostViewHolder(binding.post, object : OnInteractionListener {

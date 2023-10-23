@@ -22,7 +22,7 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
 import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.util.StringArg
-import ru.netology.nmedia.viewmodel.PostViewModel
+import ru.netology.nmedia.viewmodel.FeedItemViewModel
 
 @AndroidEntryPoint
 class NewPostFragment : Fragment() {
@@ -31,7 +31,7 @@ class NewPostFragment : Fragment() {
         var Bundle.textArg: String? by StringArg
     }
 
-    private val viewModel: PostViewModel by activityViewModels()
+    private val viewModel: FeedItemViewModel by activityViewModels()
 
     private val photoLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.insertSeparators
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +17,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.auth.AppAuth
+import ru.netology.nmedia.dto.Ad
+import ru.netology.nmedia.dto.FeedItem
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModelState
@@ -24,39 +27,57 @@ import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.File
 import javax.inject.Inject
+import kotlin.random.Random
 
 private val empty = Post(id = 0)
 
 @HiltViewModel
-class PostViewModel @Inject constructor
+class FeedItemViewModel @Inject constructor
     (
     private val repository: PostRepository,
     appAuth: AppAuth
 ) : ViewModel() {
-    private val cached = repository
+    private val cached: Flow<PagingData<FeedItem>> = repository
         .data
+        .map { pagingData ->
+            pagingData.insertSeparators(
+                generator = { before, _ ->
+                    if (before == null) {
+                        //the end of the list
+                        return@insertSeparators null
+                    }
+
+                    if (before.id.rem(5) == 0L) {
+                        Ad(
+                            Random.nextLong(),
+                            "https://netology.ru",
+                            "figma.jpg"
+                        )
+                    } else null
+                }
+            )
+        }
         .cachedIn(viewModelScope)
 
-    val data: Flow<PagingData<Post>> = appAuth.authStateFlow
+    val data: Flow<PagingData<FeedItem>> = appAuth.authStateFlow
         .flatMapLatest { token ->
-            cached
-                .map { posts ->
-                    posts.map {
-                        it.copy(ownedByMe = it.authorId == token.id)
-                    }
+            cached.map { pagingData ->
+                pagingData.map { item ->
+                    if (item is Post) {
+                        item.copy(ownedByMe = item.authorId == token.id)
+                    } else item
                 }
+            }
         }.flowOn(Dispatchers.Default)
-
 
 //    val newPostsCount: LiveData<Int> = data.switchMap {
 //        repository.getNewPostsCount(it.posts.firstOrNull()?.id ?: 0L)
 //            .asLiveData(Dispatchers.Default)
 //    }
 
-    fun updateFeed() = viewModelScope.launch {
-        repository.updateFeed()
-
-    }
+//    fun updateFeed() = viewModelScope.launch {
+//        repository.updateFeed()
+//    }
 
     //Feed state: loading, error, refreshing
     private val _dataState = MutableLiveData<FeedModelState>()
@@ -73,10 +94,6 @@ class PostViewModel @Inject constructor
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
-
-//    init {
-//        loadPosts()
-//    }
 
     fun setPhoto(uri: Uri?, file: File?) {
         _photo.value = PhotoModel(uri, file)
@@ -104,16 +121,6 @@ class PostViewModel @Inject constructor
             _dataState.value = FeedModelState(error = true)
         }
     }
-
-//    fun loadPosts() = viewModelScope.launch {
-//        try {
-//            _dataState.value = FeedModelState(loading = true)
-//            repository.getAll()
-//            _dataState.value = FeedModelState()
-//        } catch (e: Exception) {
-//            _dataState.value = FeedModelState(error = true)
-//        }
-//    }
 
     fun save() {
         edited.value?.let { post ->
