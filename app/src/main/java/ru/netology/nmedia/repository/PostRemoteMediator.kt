@@ -41,7 +41,7 @@ class PostRemoteMediator(
                         apiService.getAfter(id, state.config.pageSize)
                     }
                 }
-
+                //Подгрузка старых страниц с сервера - append
                 LoadType.APPEND -> {
                     val id = postRemoteKeyDao.min() ?: return MediatorResult.Success(
                         endOfPaginationReached = false
@@ -52,12 +52,18 @@ class PostRemoteMediator(
                         endOfPaginationReached = false
                     )
                 }
-
+                //Автоматическая подгрузка свежих страниц или постов - Prepend
                 LoadType.PREPEND -> {
-                    return MediatorResult.Success(
+                    val id = postRemoteKeyDao.max() ?: return MediatorResult.Success(
                         endOfPaginationReached = true
                     )
+                    apiService.getAfter(id, state.config.pageSize)
                 }
+//                LoadType.PREPEND -> {
+//                    return MediatorResult.Success(
+//                        endOfPaginationReached = true
+//                    )
+//                }
             }
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
