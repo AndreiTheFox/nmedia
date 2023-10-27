@@ -122,7 +122,6 @@ class PostRemoteMediator(
                     }
                 }
 
-
                 postDao.insert(body.map {
                     PostEntity.fromDto(it)
                 })
