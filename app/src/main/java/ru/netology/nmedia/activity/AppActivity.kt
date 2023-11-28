@@ -87,6 +87,7 @@ class AppActivity : AppCompatActivity() {
         fcm.token.addOnSuccessListener {
             println(it)
         }
+        println("hello")
     }
 
 }
